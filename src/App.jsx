@@ -782,21 +782,20 @@ export default function KPImmo() {
             </div>
 
             {Object.keys(logs).length === 0 ? (
-              <div style={{ animation: "fadeIn 0.5s both", textAlign: "center", padding: "40px 20px" }}>
-                <div style={{ width: 80, height: 80, borderRadius: 24, margin: "0 auto 24px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>🚀</div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, margin: "0 0 10px", fontFamily: "'Outfit'", background: "linear-gradient(135deg, #e0e7ff, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Prêt à démarrer !</h3>
-                <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, lineHeight: 1.6, margin: "0 0 8px" }}>
-                  Votre objectif : <strong style={{ color: "#a78bfa" }}>{config.goals.sales} vente{config.goals.sales > 1 ? "s" : ""} / mois</strong> pour atteindre {config.ca.toLocaleString("fr-FR")} € de CA annuel.
-                </p>
-                <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, lineHeight: 1.6, margin: "0 0 32px" }}>
-                  Commencez par enregistrer votre première journée de prospection dans le journal.
-                </p>
-                <button onClick={() => setTab("log")} style={{ padding: "16px 32px", borderRadius: 14, border: "none", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff", fontSize: 16, fontWeight: 700, cursor: "pointer", fontFamily: "'Outfit'", boxShadow: "0 8px 30px rgba(99,102,241,0.3)", display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  📝 Ouvrir le journal
+              <div style={{ animation: "fadeIn 0.5s both" }}>
+                <button onClick={() => setTab("log")} style={{ width: "100%", padding: "16px 20px", borderRadius: 14, border: "none", background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15))", border: "1px solid rgba(99,102,241,0.2)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, marginBottom: 20, textAlign: "left" }}>
+                  <span style={{ fontSize: 28 }}>📝</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Outfit'" }}>Prêt à démarrer !</div>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>Enregistrez votre première journée →</div>
+                  </div>
                 </button>
 
-                <div style={{ marginTop: 40, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20, textAlign: "left" }}>
-                  <h4 style={{ fontSize: 13, fontWeight: 600, margin: "0 0 14px", color: "rgba(255,255,255,0.5)", fontFamily: "'Outfit'", textTransform: "uppercase", letterSpacing: 1 }}>Vos objectifs mensuels</h4>
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                    <h4 style={{ fontSize: 13, fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.5)", fontFamily: "'Outfit'", textTransform: "uppercase", letterSpacing: 1 }}>Objectifs mensuels</h4>
+                    <span style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>{config.ca.toLocaleString("fr-FR")} € / an</span>
+                  </div>
                   {KPIS.map((kpi, i) => (
                     <div key={kpi.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < KPIS.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
