@@ -588,10 +588,10 @@ export default function KPImmo() {
 
   const enterGuest = () => {
     setIsGuest(true);
+    setShowAuth(false);
     setMounted(true);
     setLoading(false);
   };
-
   const openSignup = () => {
     setShowAuth(true);
     setSettings(false);
