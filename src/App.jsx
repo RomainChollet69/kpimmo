@@ -817,16 +817,16 @@ export default function KPImmo() {
             {Object.keys(logs).length === 0 ? (
               <div style={{ animation: "fadeIn 0.5s both" }}>
                 <button onClick={() => setTab("log")} style={{ width: "100%", padding: "16px 20px", borderRadius: 14, border: "none", background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15))", border: "1px solid rgba(99,102,241,0.2)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, marginBottom: 20, textAlign: "left" }}>
-                  <span style={{ fontSize: 28 }}>📝</span>
+                  <span style={{ fontSize: 28 }}>🚀</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Outfit'" }}>Prêt à démarrer !</div>
                     <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>Enregistrez votre première journée →</div>
                   </div>
                 </button>
 
-                <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(255,255,255,0.02)", borderLeft: "3px solid rgba(99,102,241,0.4)", marginBottom: 20 }}>
-                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>"{getDailyQuote().text}"</p>
-                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", margin: "8px 0 0", fontWeight: 600 }}>— {getDailyQuote().author}</p>
+                <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(255,255,255,0.02)", borderLeft: "3px solid rgba(99,102,241,0.4)", marginBottom: 20, textAlign: "center" }}>
+                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>"{getDailyQuote().text}"</p>
+                  <p style={{ fontSize: 10, color: "rgba(255,255,255,0.25)", margin: "10px 0 0", fontWeight: 600, letterSpacing: 0.5 }}>— {getDailyQuote().author}</p>
                 </div>
 
                 <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
