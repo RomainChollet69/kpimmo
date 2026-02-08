@@ -49,7 +49,7 @@ const FONTS = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600
 const CSS = `
 @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { margin: 0; background: #0a0a0f; }
+html, body, #root { margin: 0; padding: 0; background: #0a0a0f; width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
 ::-webkit-scrollbar { display: none; }
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 input[type=number] { -moz-appearance: textfield; }
@@ -134,9 +134,9 @@ function Onboarding({ onComplete }) {
   const iStyle = { width: "100%", padding: "16px 20px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: 24, fontWeight: 700, fontFamily: "'DM Mono', monospace", textAlign: "center", outline: "none" };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#fff", fontFamily: "'DM Sans', sans-serif", padding: "0 20px", display: "flex", flexDirection: "column", maxWidth: 430, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#fff", fontFamily: "'DM Sans', sans-serif", padding: "0 20px", display: "flex", flexDirection: "column", width: "100%", maxWidth: 430, margin: "0 auto" }}>
       <link href={FONTS} rel="stylesheet" />
-      <div style={{ padding: "40px 0 20px", textAlign: "center" }}>
+      <div style={{ padding: "40px 0 20px", textAlign: "center", width: "100%" }}>
         <div style={{ width: 48, height: 48, borderRadius: 14, margin: "0 auto 16px", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, fontFamily: "'Outfit'", color: "#fff", letterSpacing: -1 }}>K</div>
         <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0, fontFamily: "'Outfit'", background: "linear-gradient(135deg, #e0e7ff, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KPImmo</h1>
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14, marginTop: 4 }}>Configurons vos objectifs</p>
@@ -236,7 +236,7 @@ function Settings({ config, onSave, onClose }) {
   const iStyle = { width: "100%", padding: "12px 16px", borderRadius: 12, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: 18, fontWeight: 700, fontFamily: "'DM Mono'", textAlign: "center", outline: "none" };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#fff", fontFamily: "'DM Sans'", padding: "0 16px 40px", maxWidth: 430, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#fff", fontFamily: "'DM Sans'", padding: "0 16px 40px", width: "100%", maxWidth: 430, margin: "0 auto" }}>
       <link href={FONTS} rel="stylesheet" />
       <div style={{ padding: "16px 4px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)", marginBottom: 24, position: "sticky", top: 0, background: "#0a0a0f", zIndex: 10 }}>
         <button onClick={onClose} style={{ background: "none", border: "none", color: "#a78bfa", fontSize: 15, fontWeight: 600, cursor: "pointer", padding: 8 }}>← Retour</button>
@@ -355,7 +355,7 @@ export default function KPImmo() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans'", background: "#0a0a0f", minHeight: "100vh", maxWidth: 430, margin: "0 auto", color: "#fff", position: "relative" }}>
+    <div style={{ fontFamily: "'DM Sans'", background: "#0a0a0f", minHeight: "100vh", width: "100%", maxWidth: 430, margin: "0 auto", color: "#fff", position: "relative" }}>
       <link href={FONTS} rel="stylesheet" />
 
       <div style={{ position: "fixed", top: -100, right: -100, width: 300, height: 300, background: "radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
