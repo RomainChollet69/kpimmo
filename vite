@@ -1,0 +1,8 @@
+git init
+git add .
+git commit -m "🚀 Initial commit - KPImmo app"
+git remote add origin https://github.com/TON_USERNAME/kpimmo.git
+git branch -M main
+git remote add origin https://github.com/RomainChollet69/kpimmo.git
+git branch -M main
+git push -u origin main
