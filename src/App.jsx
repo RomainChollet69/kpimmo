@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "./supabase";
 
 const KPIS = [
   { id: "hours", label: "Heures prospectées", icon: "⏱", unit: "h", step: 0.5 },
@@ -31,7 +32,7 @@ const DAYS_FR = ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
 const KPI_COLORS = ["#6366f1","#8b5cf6","#a78bfa","#c4b5fd","#7c3aed","#5b21b6","#4c1d95","#fbbf24"];
 
 function formatDate(d) { return DAYS_FR[d.getDay()] + " " + d.getDate() + " " + MONTHS_FR[d.getMonth()]; }
-function storageKey(d) { return "af_" + d.toISOString().split("T")[0]; }
+function dateKey(d) { return d.toISOString().split("T")[0]; }
 
 function calcGoals(ca, fee, rates) {
   const sY = fee > 0 ? Math.ceil(ca / fee) : 0;
@@ -45,9 +46,25 @@ function calcGoals(ca, fee, rates) {
   return { hours, contacts, prospects, rdvSet, rdvMet, mandats, sales: sM, commission: Math.round(ca / 12) };
 }
 
+function getMotivation(data, streak) {
+  if (data.sales > 0) return { emoji: "🏆", msg: "VENTE CONCLUE ! Les efforts paient, bravo !" };
+  if (data.mandats > 0) return { emoji: "📝", msg: "Mandat signé ! Tu avances vers ton objectif !" };
+  if (data.rdvMet > 0) return { emoji: "🤝", msg: "RDV honoré ! Chaque rencontre te rapproche du succès." };
+  if (data.rdvSet > 0) return { emoji: "📅", msg: "Un RDV de plus au compteur. Continue comme ça !" };
+  if (data.prospects > 0) return { emoji: "🎯", msg: "Des prospects qualifiés, la machine est lancée !" };
+  if (data.contacts > 5) return { emoji: "💪", msg: "Tu as explosé tes contacts aujourd'hui !" };
+  if (data.contacts > 0) return { emoji: "📞", msg: "Chaque appel compte. La régularité fait la différence." };
+  if (data.hours > 0) return { emoji: "⏱", msg: "La persévérance paie. Demain sera encore meilleur !" };
+  if (streak >= 30) return { emoji: "👑", msg: "30 jours d'affilée ! Tu es une légende." };
+  if (streak >= 7) return { emoji: "🔥", msg: streak + " jours consécutifs ! Tu fais partie de l'élite." };
+  return { emoji: "✨", msg: "Bien joué ! Chaque jour compte." };
+}
+
 const FONTS = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap";
 const CSS = `
 @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body, #root { margin: 0; padding: 0; background: #0a0a0f; width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
 ::-webkit-scrollbar { display: none; }
@@ -119,6 +136,87 @@ function Streak({ n }) {
 
 function Btn({ children, on, disabled, style, ...p }) {
   return <button disabled={disabled} style={{ padding: 16, borderRadius: 14, border: "none", fontSize: 16, fontWeight: 700, cursor: disabled ? "default" : "pointer", fontFamily: "'Outfit', sans-serif", background: on ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "rgba(255,255,255,0.04)", color: on ? "#fff" : "rgba(255,255,255,0.2)", boxShadow: on ? "0 8px 30px rgba(99,102,241,0.3)" : "none", ...style }} {...p}>{children}</button>;
+}
+
+// ─── AUTH SCREEN ───
+function Auth() {
+  const [mode, setMode] = useState("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const iStyle = { width: "100%", padding: "16px 20px", borderRadius: 14, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", fontSize: 16, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", outline: "none" };
+
+  const handleSubmit = async () => {
+    setLoading(true); setError(null); setSuccess(null);
+    try {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        setSuccess("Vérifiez votre email pour confirmer votre compte !");
+      }
+    } catch (e) {
+      setError(e.message === "Invalid login credentials" ? "Email ou mot de passe incorrect" : e.message === "User already registered" ? "Cet email est déjà utilisé" : e.message);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#fff", fontFamily: "'DM Sans', sans-serif", padding: "0 20px", display: "flex", flexDirection: "column", width: "100%", maxWidth: 430, margin: "0 auto", justifyContent: "center" }}>
+      <link href={FONTS} rel="stylesheet" />
+      <style>{CSS}</style>
+
+      <div style={{ textAlign: "center", marginBottom: 40, animation: "fadeIn 0.5s both" }}>
+        <div style={{ width: 56, height: 56, borderRadius: 16, margin: "0 auto 16px", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 900, fontFamily: "'Outfit'", color: "#fff", letterSpacing: -1 }}>K</div>
+        <h1 style={{ fontSize: 32, fontWeight: 800, margin: 0, fontFamily: "'Outfit'", background: "linear-gradient(135deg, #e0e7ff, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KPImmo</h1>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14, marginTop: 6 }}>Suivez vos KPIs immobiliers</p>
+      </div>
+
+      <div style={{ animation: "fadeIn 0.5s 0.1s both" }}>
+        <div style={{ display: "flex", marginBottom: 24, background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: 4 }}>
+          <button onClick={() => { setMode("login"); setError(null); }} style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: mode === "login" ? "rgba(99,102,241,0.2)" : "transparent", color: mode === "login" ? "#a78bfa" : "rgba(255,255,255,0.4)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans'" }}>Connexion</button>
+          <button onClick={() => { setMode("signup"); setError(null); }} style={{ flex: 1, padding: "10px 0", borderRadius: 10, border: "none", background: mode === "signup" ? "rgba(99,102,241,0.2)" : "transparent", color: mode === "signup" ? "#a78bfa" : "rgba(255,255,255,0.4)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans'" }}>Inscription</button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={iStyle} />
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mot de passe" style={iStyle} onKeyDown={e => e.key === "Enter" && handleSubmit()} />
+        </div>
+
+        {error && <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 12, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", fontSize: 13 }}>{error}</div>}
+        {success && <div style={{ marginTop: 12, padding: "12px 16px", borderRadius: 12, background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.2)", color: "#34d399", fontSize: 13 }}>{success}</div>}
+
+        <Btn on disabled={loading || !email || !password} onClick={handleSubmit} style={{ width: "100%", marginTop: 20, opacity: loading ? 0.6 : 1 }}>
+          {loading ? "Chargement..." : mode === "login" ? "Se connecter" : "Créer mon compte"}
+        </Btn>
+      </div>
+    </div>
+  );
+}
+
+// ─── CELEBRATION SCREEN ───
+function Celebration({ data, streak, onContinue }) {
+  const m = getMotivation(data, streak);
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "#0a0a0f", zIndex: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <link href={FONTS} rel="stylesheet" />
+      <div style={{ animation: "scaleIn 0.5s both", textAlign: "center" }}>
+        <div style={{ fontSize: 72, animation: "pulse 1.5s infinite", marginBottom: 16 }}>{m.emoji}</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 20 }}>
+          <span style={{ fontSize: 48, fontWeight: 900, color: "#fbbf24", fontFamily: "'DM Mono'" }}>{streak}</span>
+          <span style={{ fontSize: 18, color: "rgba(255,255,255,0.5)", fontWeight: 600 }}>jour{streak > 1 ? "s" : ""} 🔥</span>
+        </div>
+        <p style={{ fontSize: 18, fontWeight: 600, color: "#fff", fontFamily: "'Outfit'", lineHeight: 1.5, maxWidth: 300, margin: "0 auto 32px" }}>{m.msg}</p>
+        <Btn on onClick={onContinue} style={{ padding: "16px 40px" }}>Voir mon tableau de bord</Btn>
+      </div>
+      <style>{CSS}</style>
+    </div>
+  );
 }
 
 // ─── ONBOARDING ───
@@ -222,7 +320,7 @@ function Onboarding({ onComplete }) {
 }
 
 // ─── SETTINGS ───
-function Settings({ config, onSave, onClose }) {
+function Settings({ config, onSave, onClose, onLogout }) {
   const [ca, setCa] = useState("" + config.ca);
   const [fee, setFee] = useState("" + config.fee);
   const [level, setLevel] = useState(config.level);
@@ -297,6 +395,10 @@ function Settings({ config, onSave, onClose }) {
       </div>
 
       <Btn on onClick={save} style={{ width: "100%" }}>Enregistrer les modifications</Btn>
+
+      <button onClick={onLogout} style={{ width: "100%", marginTop: 24, padding: 16, borderRadius: 14, border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)", color: "#f87171", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit'" }}>
+        🚪 Se déconnecter
+      </button>
       <style>{CSS}</style>
     </div>
   );
@@ -304,33 +406,137 @@ function Settings({ config, onSave, onClose }) {
 
 // ─── MAIN APP ───
 export default function KPImmo() {
+  const [user, setUser] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
   const [config, setConfig] = useState(null);
   const [tab, setTab] = useState("dashboard");
   const [settings, setSettings] = useState(false);
   const [selDate, setSelDate] = useState(new Date());
   const [logs, setLogs] = useState({});
   const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [lastLogged, setLastLogged] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [toast, setToast] = useState(null);
+  const [celebration, setCelebration] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { setMounted(true); }, []);
-
+  // Auth listener
   useEffect(() => {
-    if (!config) return;
-    setLogs({}); setStreak(0);
-  }, [config]);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setAuthReady(true);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  if (!config) return <Onboarding onComplete={setConfig} />;
-  if (settings) return <Settings config={config} onSave={setConfig} onClose={() => setSettings(false)} />;
+  // Load data from Supabase when user logs in
+  useEffect(() => {
+    if (!user) { setLoading(false); return; }
+    setMounted(true);
+    const load = async () => {
+      setLoading(true);
+      // Load config
+      const { data: cfgData } = await supabase.from("user_config").select("*").eq("user_id", user.id).single();
+      if (cfgData) {
+        setConfig({ ca: cfgData.ca, fee: cfgData.fee, level: cfgData.level, rates: cfgData.rates, goals: cfgData.goals });
+      }
+      // Load logs
+      const { data: logsData } = await supabase.from("daily_logs").select("*").eq("user_id", user.id);
+      if (logsData) {
+        const l = {};
+        logsData.forEach(row => { l[row.date] = row.data; });
+        setLogs(l);
+      }
+      // Load streak
+      const { data: streakData } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
+      if (streakData) {
+        setStreak(streakData.current_streak);
+        setBestStreak(streakData.best_streak);
+        setLastLogged(streakData.last_logged);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
 
-  const tk = storageKey(selDate);
-  const tl = logs[tk] || KPIS.reduce((a, k) => ({ ...a, [k.id]: 0 }), {});
+  // Save config to Supabase
+  const saveConfig = async (newConfig) => {
+    setConfig(newConfig);
+    if (!user) return;
+    await supabase.from("user_config").upsert({
+      user_id: user.id,
+      ca: newConfig.ca,
+      fee: newConfig.fee,
+      level: newConfig.level,
+      rates: newConfig.rates,
+      goals: newConfig.goals,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "user_id" });
+  };
+
+  // Save log to Supabase
+  const saveLog = async (date, data) => {
+    if (!user) return;
+    await supabase.from("daily_logs").upsert({
+      user_id: user.id,
+      date: date,
+      data: data,
+    }, { onConflict: "user_id,date" });
+  };
+
+  // Save streak to Supabase
+  const saveStreak = async (current, best, lastDate) => {
+    if (!user) return;
+    await supabase.from("streaks").upsert({
+      user_id: user.id,
+      current_streak: current,
+      best_streak: best,
+      last_logged: lastDate,
+    }, { onConflict: "user_id" });
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setConfig(null);
+    setLogs({});
+    setStreak(0);
+    setTab("dashboard");
+    setSettings(false);
+  };
+
+  // Auth gate
+  if (!authReady) return (
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <link href={FONTS} rel="stylesheet" />
+      <div style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'DM Sans'", fontSize: 16 }}>Chargement...</div>
+    </div>
+  );
+  if (!user) return <Auth />;
+  if (loading) return (
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <link href={FONTS} rel="stylesheet" />
+      <div style={{ textAlign: "center" }}>
+        <div style={{ width: 48, height: 48, borderRadius: 14, margin: "0 auto 16px", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, fontFamily: "'Outfit'", color: "#fff" }}>K</div>
+        <div style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'DM Sans'", fontSize: 14 }}>Chargement de vos données...</div>
+      </div>
+    </div>
+  );
+  if (!config) return <Onboarding onComplete={saveConfig} />;
+  if (settings) return <Settings config={config} onSave={saveConfig} onClose={() => setSettings(false)} onLogout={handleLogout} />;
+  if (celebration) return <Celebration data={celebration.data} streak={celebration.streak} onContinue={() => { setCelebration(null); setTab("dashboard"); }} />;
+
+  const today = dateKey(selDate);
+  const tl = logs[today] || KPIS.reduce((a, k) => ({ ...a, [k.id]: 0 }), {});
   const goals = config.goals;
 
   const monthly = KPIS.reduce((a, kpi) => {
     let t = 0;
     Object.entries(logs).forEach(([k, l]) => {
-      const d = new Date(k.replace("af_", ""));
+      const d = new Date(k);
       if (d.getMonth() === new Date().getMonth() && d.getFullYear() === new Date().getFullYear()) t += l[kpi.id] || 0;
     });
     a[kpi.id] = kpi.unit === "h" ? +t.toFixed(1) : t;
@@ -338,10 +544,9 @@ export default function KPImmo() {
   }, {});
 
   const upd = (id, v) => {
-    setLogs(p => {
-      const cl = p[tk] || KPIS.reduce((a, k) => ({ ...a, [k.id]: 0 }), {});
-      return { ...p, [tk]: { ...cl, [id]: Math.max(0, v) } };
-    });
+    const newData = { ...tl, [id]: Math.max(0, v) };
+    setLogs(p => ({ ...p, [today]: newData }));
+    saveLog(today, newData);
   };
 
   const navDate = dir => {
@@ -351,7 +556,23 @@ export default function KPImmo() {
 
   const hasAct = Object.values(tl).some(v => v > 0);
   const submit = () => {
-    if (hasAct) { setStreak(s => s + 1); setToast("🔥 Série prolongée !"); setTimeout(() => setToast(null), 2000); }
+    if (!hasAct) return;
+    const todayStr = dateKey(new Date());
+    let newStreak = streak;
+    if (lastLogged !== todayStr) {
+      const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+      if (lastLogged === dateKey(yesterday) || !lastLogged) {
+        newStreak = streak + 1;
+      } else {
+        newStreak = 1;
+      }
+    }
+    const newBest = Math.max(bestStreak, newStreak);
+    setStreak(newStreak);
+    setBestStreak(newBest);
+    setLastLogged(todayStr);
+    saveStreak(newStreak, newBest, todayStr);
+    setCelebration({ data: tl, streak: newStreak });
   };
 
   return (
@@ -374,7 +595,7 @@ export default function KPImmo() {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Streak n={streak} />
           <button onClick={() => setSettings(true)} style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.4)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </button>
         </div>
       </div>
@@ -502,7 +723,7 @@ export default function KPImmo() {
         </div>
 
         <button onClick={() => setSettings(true)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "rgba(255,255,255,0.3)", padding: "4px 16px", flex: 1 }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/><path d="M16 16l2 2"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Objectifs</span>
         </button>
       </div>
