@@ -477,16 +477,6 @@ function Settings({ config, onSave, onClose, onLogout, isGuest, onSignup }) {
       </div>
 
       <Btn on onClick={save} style={{ width: "100%" }}>Enregistrer les modifications</Btn>
-
-      {isGuest ? (
-        <button onClick={onSignup} style={{ width: "100%", marginTop: 24, padding: 16, borderRadius: 14, border: "1px solid rgba(99,102,241,0.2)", background: "rgba(99,102,241,0.06)", color: "#a78bfa", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit'" }}>
-          💾 Créer un compte pour sauvegarder
-        </button>
-      ) : (
-        <button onClick={onLogout} style={{ width: "100%", marginTop: 24, padding: 16, borderRadius: 14, border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)", color: "#f87171", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit'" }}>
-          🚪 Se déconnecter
-        </button>
-      )}
       <style>{CSS}</style>
     </div>
   );
@@ -510,6 +500,7 @@ export default function KPImmo() {
   const [toast, setToast] = useState(null);
   const [celebration, setCelebration] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showAccount, setShowAccount] = useState(false);
 
   // Auth listener
   useEffect(() => {
@@ -663,24 +654,50 @@ export default function KPImmo() {
   };
 
   const hasAct = Object.values(tl).some(v => v > 0);
-  const submit = () => {
-    if (!hasAct) return;
-    const todayStr = dateKey(new Date());
-    let newStreak = streak;
-    if (lastLogged !== todayStr) {
-      const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-      if (lastLogged === dateKey(yesterday) || !lastLogged) {
-        newStreak = streak + 1;
+
+  // Calculate streak from all logged dates
+  const calcStreakFromLogs = (allLogs) => {
+    const dates = Object.keys(allLogs)
+      .filter(d => Object.values(allLogs[d]).some(v => v > 0))
+      .sort()
+      .reverse(); // newest first
+    if (dates.length === 0) return { current: 0, best: 0, last: null };
+    
+    let current = 1;
+    for (let i = 0; i < dates.length - 1; i++) {
+      const d1 = new Date(dates[i]);
+      const d2 = new Date(dates[i + 1]);
+      const diff = (d1 - d2) / (1000 * 60 * 60 * 24);
+      if (diff === 1) {
+        current++;
       } else {
-        newStreak = 1;
+        break;
       }
     }
-    const newBest = Math.max(bestStreak, newStreak);
-    setStreak(newStreak);
-    setBestStreak(newBest);
-    setLastLogged(todayStr);
-    saveStreak(newStreak, newBest, todayStr);
-    setCelebration({ data: tl, streak: newStreak });
+    
+    // Check if the most recent logged date is today or yesterday (streak still alive)
+    const latest = new Date(dates[0]);
+    const now = new Date();
+    const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const latestDate = new Date(latest.getFullYear(), latest.getMonth(), latest.getDate());
+    const daysSince = (todayDate - latestDate) / (1000 * 60 * 60 * 24);
+    
+    if (daysSince > 1) {
+      current = 0; // streak broken
+    }
+    
+    return { current, best: Math.max(current, bestStreak), last: dates[0] };
+  };
+
+  const submit = () => {
+    if (!hasAct) return;
+    const newLogs = { ...logs, [today]: tl };
+    const { current, best, last } = calcStreakFromLogs(newLogs);
+    setStreak(current);
+    setBestStreak(best);
+    setLastLogged(last);
+    saveStreak(current, best, last);
+    setCelebration({ data: tl, streak: current });
   };
 
   return (
@@ -702,9 +719,30 @@ export default function KPImmo() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <StreakBadge n={streak} />
-          <button onClick={() => setSettings(true)} style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.4)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-          </button>
+          {isGuest ? (
+            <button onClick={openSignup} style={{ height: 36, borderRadius: 10, background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, color: "#a78bfa", padding: "0 12px", fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans'" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Créer un compte
+            </button>
+          ) : (
+            <div style={{ position: "relative" }}>
+              <button onClick={() => setShowAccount(p => !p)} style={{ width: 36, height: 36, borderRadius: 10, background: showAccount ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.04)", border: "1px solid " + (showAccount ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.08)"), cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: showAccount ? "#a78bfa" : "rgba(255,255,255,0.4)" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </button>
+              {showAccount && (
+                <>
+                  <div onClick={() => setShowAccount(false)} style={{ position: "fixed", inset: 0, zIndex: 30 }} />
+                  <div style={{ position: "absolute", top: 44, right: 0, background: "#1a1a24", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: 16, minWidth: 220, zIndex: 31, animation: "fadeIn 0.2s both", boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>Connecté en tant que</div>
+                    <div style={{ fontSize: 13, color: "#fff", fontWeight: 600, marginBottom: 16, wordBreak: "break-all" }}>{user?.email}</div>
+                    <button onClick={() => { setShowAccount(false); handleLogout(); }} style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)", color: "#f87171", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans'", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                      🚪 Se déconnecter
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
