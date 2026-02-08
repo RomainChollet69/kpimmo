@@ -849,20 +849,43 @@ export default function KPImmo() {
               </div>
             ) : (
               <>
+            {/* Hero card - Heures prospectées */}
+            {(() => {
+              const t = monthly.hours, g = goals.hours || 1, p = t / g, pct = Math.round(p * 100);
+              return (
+                <div style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 20, padding: "20px 24px", marginBottom: 14, position: "relative", overflow: "hidden", animation: "fadeIn 0.4s both" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontWeight: 500, marginBottom: 8 }}>⏱ Heures prospectées</div>
+                      <div style={{ fontSize: 40, fontWeight: 800, fontFamily: "'DM Mono'", lineHeight: 1 }}>
+                        <AnimNum value={t} suffix="h" />
+                      </div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 8, display: "flex", alignItems: "center", gap: 4 }}>
+                        <span style={{ color: pct >= 100 ? "#34d399" : pct >= 50 ? "#fbbf24" : "rgba(255,255,255,0.4)", fontWeight: 700 }}>{pct}%</span>
+                        <span>de l'objectif ({g}h)</span>
+                      </div>
+                    </div>
+                    <Ring progress={p} size={64} stroke={5} color="#6366f1" />
+                  </div>
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #6366f1, transparent)", opacity: 0.5 }} />
+                </div>
+              );
+            })()}
+
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>
-              {KPIS.map((kpi, i) => {
-                const t = monthly[kpi.id], g = goals[kpi.id] || 1, p = t / g, pct = Math.round(p * 100), c = KPI_COLORS[i];
+              {KPIS.filter(k => k.id !== "hours").map((kpi, i) => {
+                const t = monthly[kpi.id], g = goals[kpi.id] || 1, p = t / g, pct = Math.round(p * 100), c = KPI_COLORS[i + 1];
                 return (
-                  <div key={kpi.id} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 16, position: "relative", overflow: "hidden", animation: "fadeIn 0.4s " + (i * 0.05) + "s both" }}>
+                  <div key={kpi.id} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: 16, position: "relative", overflow: "hidden", animation: "fadeIn 0.4s " + (i * 0.05) + "s both" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
-                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontWeight: 500 }}>{kpi.label}</span>
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>{kpi.label}</span>
                       <Ring progress={p} color={c} />
                     </div>
                     <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'DM Mono'", lineHeight: 1 }}>
                       <AnimNum value={t} suffix={kpi.unit} />
                     </div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
-                      <span style={{ color: pct >= 100 ? "#34d399" : pct >= 50 ? "#fbbf24" : "rgba(255,255,255,0.3)", fontWeight: 600 }}>{pct}%</span>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ color: pct >= 100 ? "#34d399" : pct >= 50 ? "#fbbf24" : "rgba(255,255,255,0.4)", fontWeight: 600 }}>{pct}%</span>
                       <span>/ {kpi.unit === "€" ? g.toLocaleString("fr-FR") + "€" : g}{kpi.unit === "h" ? "h" : ""}</span>
                     </div>
                     <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, " + c + ", transparent)", opacity: 0.4 }} />
@@ -871,16 +894,16 @@ export default function KPImmo() {
               })}
             </div>
 
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 600, margin: "0 0 16px", color: "rgba(255,255,255,0.5)", fontFamily: "'Outfit'", textTransform: "uppercase", letterSpacing: 1 }}>KPIs de conversion</h3>
+            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, padding: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, margin: "0 0 16px", color: "rgba(255,255,255,0.55)", fontFamily: "'Outfit'", textTransform: "uppercase", letterSpacing: 1 }}>KPIs de conversion</h3>
               {[
                 { l: "Contacts / Heure", v: monthly.hours > 0 ? (monthly.contacts / monthly.hours).toFixed(1) : "—" },
                 { l: "Taux de qualification", v: monthly.contacts > 0 ? Math.round(monthly.prospects / monthly.contacts * 100) + "%" : "—" },
                 { l: "Taux de RDV", v: monthly.prospects > 0 ? Math.round(monthly.rdvSet / monthly.prospects * 100) + "%" : "—" },
                 { l: "Taux de closing", v: monthly.mandats > 0 ? Math.round(monthly.sales / monthly.mandats * 100) + "%" : "—" },
               ].map((x, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.04)" : "none" }}>
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{x.l}</span>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>{x.l}</span>
                   <span style={{ fontSize: 16, fontWeight: 700, color: "#a78bfa", fontFamily: "'DM Mono'" }}>{x.v}</span>
                 </div>
               ))}
