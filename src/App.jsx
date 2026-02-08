@@ -65,6 +65,7 @@ const CSS = `
 @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body, #root { margin: 0; padding: 0; background: #0a0a0f; width: 100%; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
 ::-webkit-scrollbar { display: none; }
@@ -125,7 +126,7 @@ function Stepper({ kpi, value, onChange }) {
   );
 }
 
-function Streak({ n }) {
+function StreakBadge({ n }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6, background: n > 0 ? "rgba(251,191,36,0.1)" : "rgba(255,255,255,0.04)", border: "1px solid " + (n > 0 ? "rgba(251,191,36,0.2)" : "rgba(255,255,255,0.06)"), borderRadius: 10, padding: "6px 10px" }}>
       <span style={{ fontSize: 16 }}>🔥</span>
@@ -138,8 +139,24 @@ function Btn({ children, on, disabled, style, ...p }) {
   return <button disabled={disabled} style={{ padding: 16, borderRadius: 14, border: "none", fontSize: 16, fontWeight: 700, cursor: disabled ? "default" : "pointer", fontFamily: "'Outfit', sans-serif", background: on ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "rgba(255,255,255,0.04)", color: on ? "#fff" : "rgba(255,255,255,0.2)", boxShadow: on ? "0 8px 30px rgba(99,102,241,0.3)" : "none", ...style }} {...p}>{children}</button>;
 }
 
+// ─── GUEST BANNER ───
+function GuestBanner({ onSignup }) {
+  const [dismissed, setDismissed] = useState(false);
+  if (dismissed) return null;
+  return (
+    <div style={{ margin: "0 16px 12px", padding: "12px 16px", borderRadius: 12, background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.15)", display: "flex", alignItems: "center", gap: 10, animation: "slideDown 0.4s both" }}>
+      <span style={{ fontSize: 16 }}>⚠️</span>
+      <div style={{ flex: 1 }}>
+        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.4 }}>Vos données ne sont pas sauvegardées</span>
+      </div>
+      <button onClick={onSignup} style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: "rgba(99,102,241,0.2)", color: "#a78bfa", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>Créer un compte</button>
+      <button onClick={() => setDismissed(true)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 16, cursor: "pointer", padding: "0 4px" }}>×</button>
+    </div>
+  );
+}
+
 // ─── AUTH SCREEN ───
-function Auth() {
+function Auth({ onGuest, guestData }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -156,12 +173,24 @@ function Auth() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        setSuccess("Vérifiez votre email pour confirmer votre compte !");
+        // If we have guest data and signup succeeded with auto-confirm, migrate it
+        if (data.user && guestData) {
+          await migrateGuestData(data.user.id, guestData);
+        }
+        if (data.session) {
+          // Auto-confirmed, will be handled by auth listener
+        } else {
+          setSuccess("Vérifiez votre email pour confirmer votre compte !");
+        }
       }
     } catch (e) {
-      setError(e.message === "Invalid login credentials" ? "Email ou mot de passe incorrect" : e.message === "User already registered" ? "Cet email est déjà utilisé" : e.message);
+      setError(
+        e.message === "Invalid login credentials" ? "Email ou mot de passe incorrect" :
+        e.message === "User already registered" ? "Cet email est déjà utilisé" :
+        e.message
+      );
     }
     setLoading(false);
   };
@@ -194,13 +223,60 @@ function Auth() {
         <Btn on disabled={loading || !email || !password} onClick={handleSubmit} style={{ width: "100%", marginTop: 20, opacity: loading ? 0.6 : 1 }}>
           {loading ? "Chargement..." : mode === "login" ? "Se connecter" : "Créer mon compte"}
         </Btn>
+
+        {guestData && (
+          <div style={{ marginTop: 16, padding: "12px 16px", borderRadius: 12, background: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.12)", textAlign: "center" }}>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>💾 Vos données en mode invité seront sauvegardées à l'inscription</span>
+          </div>
+        )}
+
+        <div style={{ textAlign: "center", marginTop: 24 }}>
+          <div style={{ width: 40, height: 1, background: "rgba(255,255,255,0.08)", margin: "0 auto 20px" }} />
+          <button onClick={onGuest} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.35)", fontSize: 14, cursor: "pointer", fontFamily: "'DM Sans'", padding: 8 }}>
+            Essayer sans compte →
+          </button>
+          <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, marginTop: 6 }}>Vos données ne seront pas sauvegardées</p>
+        </div>
       </div>
     </div>
   );
 }
 
+// Migrate guest data to Supabase after signup
+async function migrateGuestData(userId, guestData) {
+  try {
+    if (guestData.config) {
+      await supabase.from("user_config").upsert({
+        user_id: userId,
+        ca: guestData.config.ca,
+        fee: guestData.config.fee,
+        level: guestData.config.level,
+        rates: guestData.config.rates,
+        goals: guestData.config.goals,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "user_id" });
+    }
+    if (guestData.logs && Object.keys(guestData.logs).length > 0) {
+      const rows = Object.entries(guestData.logs).map(([date, data]) => ({
+        user_id: userId, date, data,
+      }));
+      await supabase.from("daily_logs").upsert(rows, { onConflict: "user_id,date" });
+    }
+    if (guestData.streak > 0) {
+      await supabase.from("streaks").upsert({
+        user_id: userId,
+        current_streak: guestData.streak,
+        best_streak: guestData.bestStreak,
+        last_logged: guestData.lastLogged,
+      }, { onConflict: "user_id" });
+    }
+  } catch (e) {
+    console.error("Migration error:", e);
+  }
+}
+
 // ─── CELEBRATION SCREEN ───
-function Celebration({ data, streak, onContinue }) {
+function Celebration({ data, streak, isGuest, onContinue, onSignup }) {
   const m = getMotivation(data, streak);
   return (
     <div style={{ position: "fixed", inset: 0, background: "#0a0a0f", zIndex: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -213,6 +289,12 @@ function Celebration({ data, streak, onContinue }) {
         </div>
         <p style={{ fontSize: 18, fontWeight: 600, color: "#fff", fontFamily: "'Outfit'", lineHeight: 1.5, maxWidth: 300, margin: "0 auto 32px" }}>{m.msg}</p>
         <Btn on onClick={onContinue} style={{ padding: "16px 40px" }}>Voir mon tableau de bord</Btn>
+
+        {isGuest && (
+          <button onClick={onSignup} style={{ display: "block", margin: "20px auto 0", background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 13, cursor: "pointer", fontFamily: "'DM Sans'" }}>
+            💾 Créer un compte pour sauvegarder mes progrès
+          </button>
+        )}
       </div>
       <style>{CSS}</style>
     </div>
@@ -320,7 +402,7 @@ function Onboarding({ onComplete }) {
 }
 
 // ─── SETTINGS ───
-function Settings({ config, onSave, onClose, onLogout }) {
+function Settings({ config, onSave, onClose, onLogout, isGuest, onSignup }) {
   const [ca, setCa] = useState("" + config.ca);
   const [fee, setFee] = useState("" + config.fee);
   const [level, setLevel] = useState(config.level);
@@ -396,9 +478,15 @@ function Settings({ config, onSave, onClose, onLogout }) {
 
       <Btn on onClick={save} style={{ width: "100%" }}>Enregistrer les modifications</Btn>
 
-      <button onClick={onLogout} style={{ width: "100%", marginTop: 24, padding: 16, borderRadius: 14, border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)", color: "#f87171", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit'" }}>
-        🚪 Se déconnecter
-      </button>
+      {isGuest ? (
+        <button onClick={onSignup} style={{ width: "100%", marginTop: 24, padding: 16, borderRadius: 14, border: "1px solid rgba(99,102,241,0.2)", background: "rgba(99,102,241,0.06)", color: "#a78bfa", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit'" }}>
+          💾 Créer un compte pour sauvegarder
+        </button>
+      ) : (
+        <button onClick={onLogout} style={{ width: "100%", marginTop: 24, padding: 16, borderRadius: 14, border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.06)", color: "#f87171", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit'" }}>
+          🚪 Se déconnecter
+        </button>
+      )}
       <style>{CSS}</style>
     </div>
   );
@@ -408,6 +496,8 @@ function Settings({ config, onSave, onClose, onLogout }) {
 export default function KPImmo() {
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [config, setConfig] = useState(null);
   const [tab, setTab] = useState("dashboard");
   const [settings, setSettings] = useState(false);
@@ -428,7 +518,12 @@ export default function KPImmo() {
       setAuthReady(true);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const newUser = session?.user ?? null;
+      setUser(newUser);
+      if (newUser) {
+        setIsGuest(false);
+        setShowAuth(false);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -439,19 +534,16 @@ export default function KPImmo() {
     setMounted(true);
     const load = async () => {
       setLoading(true);
-      // Load config
       const { data: cfgData } = await supabase.from("user_config").select("*").eq("user_id", user.id).single();
       if (cfgData) {
         setConfig({ ca: cfgData.ca, fee: cfgData.fee, level: cfgData.level, rates: cfgData.rates, goals: cfgData.goals });
       }
-      // Load logs
       const { data: logsData } = await supabase.from("daily_logs").select("*").eq("user_id", user.id);
       if (logsData) {
         const l = {};
         logsData.forEach(row => { l[row.date] = row.data; });
         setLogs(l);
       }
-      // Load streak
       const { data: streakData } = await supabase.from("streaks").select("*").eq("user_id", user.id).single();
       if (streakData) {
         setStreak(streakData.current_streak);
@@ -463,60 +555,70 @@ export default function KPImmo() {
     load();
   }, [user]);
 
-  // Save config to Supabase
+  // Save config
   const saveConfig = async (newConfig) => {
     setConfig(newConfig);
-    if (!user) return;
+    if (!user || isGuest) return;
     await supabase.from("user_config").upsert({
-      user_id: user.id,
-      ca: newConfig.ca,
-      fee: newConfig.fee,
-      level: newConfig.level,
-      rates: newConfig.rates,
-      goals: newConfig.goals,
-      updated_at: new Date().toISOString(),
+      user_id: user.id, ca: newConfig.ca, fee: newConfig.fee, level: newConfig.level,
+      rates: newConfig.rates, goals: newConfig.goals, updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
   };
 
-  // Save log to Supabase
+  // Save log
   const saveLog = async (date, data) => {
-    if (!user) return;
-    await supabase.from("daily_logs").upsert({
-      user_id: user.id,
-      date: date,
-      data: data,
-    }, { onConflict: "user_id,date" });
+    if (!user || isGuest) return;
+    await supabase.from("daily_logs").upsert({ user_id: user.id, date, data }, { onConflict: "user_id,date" });
   };
 
-  // Save streak to Supabase
+  // Save streak
   const saveStreak = async (current, best, lastDate) => {
-    if (!user) return;
+    if (!user || isGuest) return;
     await supabase.from("streaks").upsert({
-      user_id: user.id,
-      current_streak: current,
-      best_streak: best,
-      last_logged: lastDate,
+      user_id: user.id, current_streak: current, best_streak: best, last_logged: lastDate,
     }, { onConflict: "user_id" });
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setConfig(null);
-    setLogs({});
-    setStreak(0);
-    setTab("dashboard");
+    setConfig(null); setLogs({}); setStreak(0); setBestStreak(0);
+    setLastLogged(null); setTab("dashboard"); setSettings(false);
+    setIsGuest(false);
+  };
+
+  const enterGuest = () => {
+    setIsGuest(true);
+    setMounted(true);
+    setLoading(false);
+  };
+
+  const openSignup = () => {
+    setShowAuth(true);
     setSettings(false);
   };
 
-  // Auth gate
+  const getGuestData = () => ({
+    config, logs, streak, bestStreak, lastLogged,
+  });
+
+  // Loading screen
   if (!authReady) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <link href={FONTS} rel="stylesheet" />
       <div style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'DM Sans'", fontSize: 16 }}>Chargement...</div>
     </div>
   );
-  if (!user) return <Auth />;
-  if (loading) return (
+
+  // Show auth screen
+  if (!user && !isGuest || showAuth) return (
+    <Auth
+      onGuest={enterGuest}
+      guestData={isGuest && config ? getGuestData() : null}
+    />
+  );
+
+  // Loading user data
+  if (!isGuest && loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <link href={FONTS} rel="stylesheet" />
       <div style={{ textAlign: "center" }}>
@@ -525,9 +627,15 @@ export default function KPImmo() {
       </div>
     </div>
   );
+
+  // Onboarding
   if (!config) return <Onboarding onComplete={saveConfig} />;
-  if (settings) return <Settings config={config} onSave={saveConfig} onClose={() => setSettings(false)} onLogout={handleLogout} />;
-  if (celebration) return <Celebration data={celebration.data} streak={celebration.streak} onContinue={() => { setCelebration(null); setTab("dashboard"); }} />;
+
+  // Settings
+  if (settings) return <Settings config={config} onSave={saveConfig} onClose={() => setSettings(false)} onLogout={handleLogout} isGuest={isGuest} onSignup={openSignup} />;
+
+  // Celebration
+  if (celebration) return <Celebration data={celebration.data} streak={celebration.streak} isGuest={isGuest} onContinue={() => { setCelebration(null); setTab("dashboard"); }} onSignup={openSignup} />;
 
   const today = dateKey(selDate);
   const tl = logs[today] || KPIS.reduce((a, k) => ({ ...a, [k.id]: 0 }), {});
@@ -593,12 +701,15 @@ export default function KPImmo() {
           <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Outfit'", background: "linear-gradient(135deg, #e0e7ff, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>KPImmo</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Streak n={streak} />
+          <StreakBadge n={streak} />
           <button onClick={() => setSettings(true)} style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.4)" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </button>
         </div>
       </div>
+
+      {/* Guest banner */}
+      {isGuest && tab === "dashboard" && <div style={{ paddingTop: 12 }}><GuestBanner onSignup={openSignup} /></div>}
 
       {/* Content */}
       <div style={{ padding: "0 0 100px", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)", transition: "all 0.5s" }}>
@@ -723,7 +834,7 @@ export default function KPImmo() {
         </div>
 
         <button onClick={() => setSettings(true)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, color: "rgba(255,255,255,0.3)", padding: "4px 16px", flex: 1 }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Objectifs</span>
         </button>
       </div>
