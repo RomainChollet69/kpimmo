@@ -60,6 +60,39 @@ function getMotivation(data, streak) {
   return { emoji: "✨", msg: "Bien joué ! Chaque jour compte." };
 }
 
+const QUOTES = [
+  { text: "Le succès n'est pas final, l'échec n'est pas fatal : c'est le courage de continuer qui compte.", author: "Winston Churchill" },
+  { text: "La discipline est le pont entre les objectifs et les résultats.", author: "Jim Rohn" },
+  { text: "Ne comptez pas les jours, faites que les jours comptent.", author: "Mohamed Ali" },
+  { text: "Le meilleur moment pour planter un arbre était il y a 20 ans. Le deuxième meilleur moment, c'est maintenant.", author: "Proverbe chinois" },
+  { text: "Chaque appel que tu ne passes pas est une vente que tu as déjà perdue.", author: "Grant Cardone" },
+  { text: "Le succès, c'est aller d'échec en échec sans perdre son enthousiasme.", author: "Winston Churchill" },
+  { text: "Les gagnants trouvent des moyens, les perdants trouvent des excuses.", author: "F.D. Roosevelt" },
+  { text: "Ta régularité d'aujourd'hui construit ta liberté de demain.", author: "Olivier Roland" },
+  { text: "L'action est la clé fondamentale de tout succès.", author: "Pablo Picasso" },
+  { text: "Il n'y a qu'une façon d'échouer, c'est d'abandonner avant d'avoir réussi.", author: "Olivier Lockert" },
+  { text: "Le professionnel a des habitudes. L'amateur a des envies.", author: "Steven Pressfield" },
+  { text: "Un objectif sans plan n'est qu'un souhait.", author: "Antoine de Saint-Exupéry" },
+  { text: "La prospection est une compétence, pas un talent. Elle se travaille.", author: "Jeb Blount" },
+  { text: "Le succès appartient à ceux qui se lèvent tôt.", author: "Proverbe français" },
+  { text: "Ce n'est pas parce que les choses sont difficiles que nous n'osons pas. C'est parce que nous n'osons pas qu'elles sont difficiles.", author: "Sénèque" },
+  { text: "Fais aujourd'hui ce que les autres ne veulent pas faire. Demain tu vivras comme les autres ne peuvent pas vivre.", author: "Jerry Rice" },
+  { text: "La vente commence quand le client dit non.", author: "Elmer Wheeler" },
+  { text: "Votre attitude, pas votre aptitude, détermine votre altitude.", author: "Zig Ziglar" },
+  { text: "Le secret pour avancer, c'est de commencer.", author: "Mark Twain" },
+  { text: "Les petites actions quotidiennes créent des résultats extraordinaires.", author: "Robin Sharma" },
+  { text: "N'attendez pas les conditions parfaites. Commencez maintenant et ajustez en cours de route.", author: "Denis Waitley" },
+  { text: "La persévérance n'est pas une longue course. C'est plusieurs petites courses, les unes après les autres.", author: "Walter Elliot" },
+  { text: "Celui qui déplace une montagne commence par déplacer de petites pierres.", author: "Confucius" },
+  { text: "Le plus grand risque est de ne prendre aucun risque.", author: "Mark Zuckerberg" },
+  { text: "Sois l'agent que tu aurais aimé rencontrer en tant que client.", author: "Gary Keller" },
+];
+
+function getDailyQuote() {
+  const day = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+  return QUOTES[day % QUOTES.length];
+}
+
 const FONTS = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap";
 const CSS = `
 @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
@@ -790,6 +823,11 @@ export default function KPImmo() {
                     <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>Enregistrez votre première journée →</div>
                   </div>
                 </button>
+
+                <div style={{ padding: "16px 20px", borderRadius: 14, background: "rgba(255,255,255,0.02)", borderLeft: "3px solid rgba(99,102,241,0.4)", marginBottom: 20 }}>
+                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>"{getDailyQuote().text}"</p>
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", margin: "8px 0 0", fontWeight: 600 }}>— {getDailyQuote().author}</p>
+                </div>
 
                 <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
