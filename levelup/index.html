@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level Up ! — Efficity</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #F5C518;
+    --yellow-dark: #d4a900;
+    --yellow-bg: rgba(245,197,24,0.08);
+    --black: #0f0f0f;
+    --dark: #1a1a1a;
+    --dark2: #222222;
+    --gray: #3a3a3a;
+    --gray-light: #888;
+    --white: #ffffff;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --purple: #a78bfa;
+    --orange: #f97316;
+    --red: #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--dark);
+    border-bottom: 3px solid var(--yellow);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .logo span { color: var(--yellow); }
+  .badge {
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--dark);
+    border-bottom: 1px solid var(--gray);
+    padding: 72px 40px 64px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(48px, 8vw, 80px);
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .hero h1 em {
+    color: var(--yellow);
+    font-style: normal;
+  }
+  .hero p {
+    color: var(--gray-light);
+    font-size: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .hero-line {
+    width: 48px;
+    height: 3px;
+    background: var(--yellow);
+    margin: 28px auto 0;
+  }
+
+  /* ── GRID ── */
+  .grid-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 32px 96px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--dark);
+    border: 1px solid var(--gray);
+    padding: 32px 28px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s, background .2s;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--yellow));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .25s ease;
+  }
+  .card:hover {
+    border-color: var(--card-accent, var(--yellow));
+    background: #1f1f1f;
+    transform: translateY(-3px);
+  }
+  .card:hover::before { transform: scaleX(1); }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--card-accent-bg, var(--yellow-bg));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-icon svg { width: 24px; height: 24px; }
+
+  .card-tag {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--card-accent, var(--yellow));
+    background: var(--card-accent-bg, var(--yellow-bg));
+    padding: 3px 10px;
+    width: fit-content;
+  }
+
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: .5px;
+  }
+
+  .card-desc {
+    color: var(--gray-light);
+    font-size: 14px;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .card-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--card-accent, var(--yellow));
+    margin-top: 4px;
+    transition: gap .2s;
+  }
+  .card:hover .card-cta { gap: 14px; }
+  .card-cta svg { width: 16px; height: 16px; }
+
+  /* card — grande (span 2) */
+  .card-wide {
+    grid-column: span 2;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px;
+  }
+  .card-wide .card-body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .card-wide .card-icon { width: 56px; height: 56px; flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--gray);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--gray-light);
+    font-size: 13px;
+  }
+  footer strong { color: var(--yellow); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .card-wide { grid-column: span 2; }
+  }
+  @media (max-width: 580px) {
+    .grid { grid-template-columns: 1fr; }
+    .card-wide { grid-column: span 1; flex-direction: column; }
+    .hero { padding: 48px 24px 40px; }
+    header { padding: 16px 24px; }
+    .grid-section { padding: 40px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">LEVEL <span>UP</span> !</div>
+  <div class="badge">Efficity</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Tes outils de performance</div>
+  <h1>Passe à <em>l'action.</em><br>Maintenant.</h1>
+  <p>5 outils conçus pour structurer ta prospection, affiner ton mindset et maximiser tes résultats.</p>
+  <div class="hero-line"></div>
+</section>
+
+<!-- GRID -->
+<section class="grid-section">
+  <div class="section-title">Choisir un outil</div>
+  <div class="grid">
+
+    <!-- 1. KPImmo Dashboard — large -->
+    <a class="card card-wide" href="/"
+       style="--card-accent:#a78bfa; --card-accent-bg:rgba(167,139,250,0.08);">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">Dashboard</div>
+        <div class="card-title">KPImmo — Suivi de performance</div>
+        <div class="card-desc">Visualise tes KPIs en temps réel, suis ton activité de prospection et pilote ta performance commerciale au quotidien.</div>
+        <div class="card-cta">
+          Accéder au dashboard
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- 2. Plan d'Action SMART -->
+    <a class="card" href="plan-action-smart.html"
+       style="--card-accent:#F5C518; --card-accent-bg:rgba(245,197,24,0.08);">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+      </div>
+      <div class="card-tag">IA · Stratégie</div>
+      <div class="card-title">Plan d'Action SMART</div>
+      <div class="card-desc">Transforme ton objectif en plan d'actions structuré, cadencé et réalisable — généré par IA en quelques secondes.</div>
+      <div class="card-cta">
+        Lancer l'outil
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <!-- 3. Calculateur BFR -->
+    <a class="card" href="bfr-calculator.html"
+       style="--card-accent:#22c55e; --card-accent-bg:rgba(34,197,94,0.08);">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+        </svg>
+      </div>
+      <div class="card-tag">Finance</div>
+      <div class="card-title">Calculateur BFR</div>
+      <div class="card-desc">Calcule ton besoin en financement de prospection et définis le nombre de mandats à décrocher pour atteindre tes objectifs.</div>
+      <div class="card-cta">
+        Calculer mon BFR
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <!-- 4. Semaine Type -->
+    <a class="card" href="semaine-type.html"
+       style="--card-accent:#3b82f6; --card-accent-bg:rgba(59,130,246,0.08);">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div class="card-tag">Organisation</div>
+      <div class="card-title">Ma Semaine Type</div>
+      <div class="card-desc">Construis ton planning idéal de la semaine : bloque tes créneaux de prospection, de suivi et de rendez-vous pour performer en continu.</div>
+      <div class="card-cta">
+        Organiser ma semaine
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <!-- 5. Diagnostic Mindset -->
+    <a class="card" href="diagnostic-mindset.html"
+       style="--card-accent:#f97316; --card-accent-bg:rgba(249,115,22,0.08);">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="card-tag">Mindset</div>
+      <div class="card-title">Diagnostic Mindset</div>
+      <div class="card-desc">Évalue ton état d'esprit, identifie tes freins mentaux et reçois des axes concrets pour renforcer ta posture de champion.</div>
+      <div class="card-cta">
+        Faire mon diagnostic
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>Level Up ! &nbsp;·&nbsp; <strong>Efficity</strong></span>
+  <span>5 outils · 0 excuse</span>
+</footer>
+
+</body>
+</html>
