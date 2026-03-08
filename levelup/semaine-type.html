@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma Semaine Type — Level Up ! Efficity</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --yellow: #F5C518;
+  --yellow-dark: #d4a900;
+  --black: #0f0f0f;
+  --dark: #1a1a1a;
+  --dark2: #242424;
+  --dark3: #2e2e2e;
+  --gray: #3a3a3a;
+  --gray-light: #888;
+  --white: #ffffff;
+
+  /* Catégories */
+  --c1: #3b82f6; /* Prospection téléphonique */
+  --c2: #10b981; /* Prospection terrain */
+  --c3: #f59e0b; /* Suivi pipeline */
+  --c4: #8b5cf6; /* RDV clients */
+  --c5: #ef4444; /* Administratif */
+  --c6: #06b6d4; /* Formation */
+  --c7: #6b7280; /* Événements perso */
+
+  --cell-h: 52px;
+  --time-w: 58px;
+  --day-w: 148px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--dark);
+  border-bottom: 3px solid var(--yellow);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 24px;
+  color: var(--white);
+  white-space: nowrap;
+}
+.logo span { color: var(--yellow); }
+.header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--yellow); color: var(--black); }
+.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-1px); }
+.btn-secondary { background: transparent; color: var(--gray-light); border: 1px solid var(--gray); }
+.btn-secondary:hover { color: var(--white); border-color: var(--white); }
+.btn-danger { background: transparent; color: #ef4444; border: 1px solid #ef4444; }
+.btn-danger:hover { background: #ef4444; color: var(--white); }
+
+/* ── HERO ── */
+.hero {
+  background: var(--dark);
+  padding: 28px 28px 24px;
+  border-bottom: 1px solid var(--gray);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hero-text h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.hero-text h1 em { color: var(--yellow); font-style: normal; }
+.hero-text p { color: var(--gray-light); font-size: 13px; max-width: 480px; line-height: 1.5; }
+
+/* ── LAYOUT ── */
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: calc(100vh - 120px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--dark2);
+  border-right: 1px solid var(--gray);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 63px;
+  height: calc(100vh - 63px);
+  overflow-y: auto;
+}
+.sidebar-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-bottom: 2px;
+}
+
+/* ── CATEGORY BLOCKS (palette) ── */
+.palette { display: flex; flex-direction: column; gap: 6px; }
+
+.palette-block {
+  padding: 10px 12px;
+  border-radius: 2px;
+  cursor: grab;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .15s, opacity .15s;
+  user-select: none;
+  border-left: 3px solid transparent;
+}
+.palette-block:active { cursor: grabbing; transform: scale(1.03); }
+.palette-block .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+
+/* ── STATS ── */
+.stats-panel { display: flex; flex-direction: column; gap: 8px; }
+.stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.stat-color {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.stat-name { font-size: 11px; color: #bbb; flex: 1; }
+.stat-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--yellow);
+  width: 32px;
+  text-align: right;
+}
+.stat-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: var(--gray);
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+.stat-bar { height: 100%; transition: width .4s ease; }
+
+/* ── ALERT ── */
+.alert-box {
+  background: var(--dark3);
+  border: 1px solid var(--gray);
+  border-left: 3px solid var(--yellow);
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #ccc;
+  line-height: 1.5;
+  display: none;
+}
+.alert-box.visible { display: block; }
+.alert-box strong { color: var(--yellow); }
+
+/* ── INSTRUCTIONS ── */
+.instructions {
+  font-size: 11px;
+  color: var(--gray-light);
+  line-height: 1.6;
+}
+.instructions strong { color: #ccc; }
+
+/* ── GRID AREA ── */
+.grid-area {
+  padding: 20px;
+  overflow-x: auto;
+}
+.grid-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.grid-name-row label { font-size: 12px; color: var(--gray-light); }
+#conseiller-name {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  color: var(--white);
+  padding: 6px 12px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  width: 220px;
+}
+#conseiller-name:focus { outline: none; border-color: var(--yellow); }
+
+/* ── GRID ── */
+#grid-wrapper { min-width: 820px; }
+
+.grid-header {
+  display: grid;
+  grid-template-columns: var(--time-w) repeat(5, var(--day-w));
+  gap: 2px;
+  margin-bottom: 2px;
+}
+.grid-header .day-head {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  text-align: center;
+  padding: 10px 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.grid-header .corner { background: transparent; border: none; }
+
+.grid-body {
+  display: grid;
+  grid-template-columns: var(--time-w) repeat(5, var(--day-w));
+  gap: 2px;
+}
+
+.time-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: 11px;
+  color: var(--gray-light);
+  height: var(--cell-h);
+  font-weight: 600;
+}
+
+.cell {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  height: var(--cell-h);
+  position: relative;
+  transition: background .15s;
+  cursor: pointer;
+}
+.cell:hover { background: var(--dark3); }
+.cell.drag-over {
+  background: rgba(245, 197, 24, 0.12);
+  border-color: var(--yellow);
+}
+.cell.half-hour { border-top: 1px dashed #333; }
+
+/* ── BLOCK ON GRID ── */
+.grid-block {
+  position: absolute;
+  left: 2px; right: 2px; top: 2px;
+  border-radius: 2px;
+  padding: 4px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--white);
+  cursor: grab;
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  user-select: none;
+  border-left: 3px solid rgba(255,255,255,0.3);
+  line-height: 1.3;
+}
+.grid-block:active { cursor: grabbing; }
+.grid-block .block-label { font-size: 10px; opacity: 0.8; }
+.grid-block .block-delete {
+  position: absolute;
+  top: 2px; right: 4px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+  display: none;
+}
+.grid-block:hover .block-delete { display: block; }
+.grid-block .resize-handle {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+  cursor: ns-resize;
+  background: rgba(255,255,255,0.1);
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  border-top: 4px solid var(--yellow);
+  padding: 28px 32px;
+  width: 380px;
+  max-width: 95vw;
+  animation: fadeIn .25s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+.modal h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: var(--yellow);
+}
+.modal label { font-size: 12px; color: var(--gray-light); display: block; margin-bottom: 5px; margin-top: 14px; text-transform: uppercase; letter-spacing: 1px; }
+.modal select, .modal input[type="text"] {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--gray);
+  color: var(--white);
+  padding: 10px 12px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+}
+.modal select:focus, .modal input:focus { outline: none; border-color: var(--yellow); }
+.modal-btns { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+/* ── COLOR PREVIEW ── */
+.cat-preview {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.cat-chip {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color .15s;
+}
+.cat-chip.selected { border-color: var(--white); }
+
+/* ── PRINT ── */
+@media print {
+  header, .sidebar, .hero, .grid-area > .grid-name-row, .grid-area > div:first-child { display: none !important; }
+  body { background: white; color: black; }
+  .app { display: block; }
+  .grid-area { padding: 0; }
+  #grid-wrapper { min-width: unset; }
+  .cell { background: #f9f9f9 !important; border-color: #ddd !important; }
+  .day-head { background: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .grid-block { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-header { display: block !important; }
+}
+.print-header {
+  display: none;
+  padding: 12px 0 20px;
+  border-bottom: 3px solid #F5C518;
+  margin-bottom: 16px;
+}
+.print-header h2 { font-size: 22px; font-weight: 900; }
+.print-header p { font-size: 13px; color: #666; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">LEVEL <span>UP !</span> <span style="font-size:15px;font-weight:400;color:var(--gray-light);">× Ma Semaine Type</span></div>
+  <div class="header-actions">
+    <button class="btn btn-secondary" onclick="clearAll()">🗑 Tout effacer</button>
+    <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimer</button>
+    <button class="btn btn-primary" onclick="exportPNG()">📷 Télécharger PNG</button>
+  </div>
+</header>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>Ajouter un bloc</h3>
+    <label>Catégorie</label>
+    <div class="cat-preview" id="cat-chips"></div>
+    <label>Label personnalisé <span style="color:var(--gray-light)">(optionnel)</span></label>
+    <input type="text" id="modal-label" placeholder="ex: Appels pige 10h-12h" maxlength="40">
+    <label>Durée</label>
+    <select id="modal-duration">
+      <option value="1">30 min</option>
+      <option value="2" selected>1 heure</option>
+      <option value="3">1h30</option>
+      <option value="4">2 heures</option>
+      <option value="6">3 heures</option>
+      <option value="8">4 heures</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmAdd()">Ajouter ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-title">Blocs disponibles</div>
+      <div class="sidebar-title" style="font-size:10px;margin-top:2px;margin-bottom:10px;">Glisse sur la grille →</div>
+      <div class="palette" id="palette"></div>
+    </div>
+
+    <div>
+      <div class="sidebar-title" style="margin-bottom:10px;">Répartition du temps</div>
+      <div class="stats-panel" id="stats-panel"></div>
+    </div>
+
+    <div class="alert-box" id="alert-box">
+      <strong>⚠️ Attention</strong><br>
+      La prospection représente moins de 20% de ta semaine. Les champions prospectent en premier, chaque jour.
+    </div>
+
+    <div class="instructions">
+      <strong>Comment utiliser :</strong><br>
+      1. Glisse un bloc coloré sur la grille<br>
+      2. Clique sur une cellule vide pour ajouter<br>
+      3. × pour supprimer un bloc<br>
+      4. Exporte en PNG ou imprime
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid-area">
+    <div class="print-header">
+      <h2 id="print-name">Ma Semaine Type</h2>
+      <p>Level Up ! 2.0 — Efficity</p>
+    </div>
+    <div class="grid-name-row">
+      <label>Conseiller :</label>
+      <input type="text" id="conseiller-name" placeholder="Ton prénom..." oninput="document.getElementById('print-name').textContent = this.value ? this.value + ' — Ma Semaine Type' : 'Ma Semaine Type'">
+    </div>
+    <div id="grid-wrapper">
+      <div class="grid-header" id="grid-header"></div>
+      <div class="grid-body" id="grid-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CATEGORIES ──
+const CATS = [
+  { id: 'tel',    label: 'Prospection téléphonique', color: '#3b82f6', emoji: '📞' },
+  { id: 'terrain',label: 'Prospection terrain',       color: '#10b981', emoji: '🚶' },
+  { id: 'pipe',   label: 'Suivi pipeline',            color: '#f59e0b', emoji: '🔁' },
+  { id: 'rdv',    label: 'RDV clients',               color: '#8b5cf6', emoji: '🤝' },
+  { id: 'admin',  label: 'Administratif',             color: '#ef4444', emoji: '📋' },
+  { id: 'forma',  label: 'Formation / Dev perso',     color: '#06b6d4', emoji: '📚' },
+  { id: 'perso',  label: 'Événements personnels',     color: '#6b7280', emoji: '🏠' },
+];
+
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+// Slots: 7h00 → 20h00, par demi-heure = 26 slots
+const START_H = 7, END_H = 20;
+const SLOTS = [];
+for (let h = START_H; h < END_H; h++) {
+  SLOTS.push(`${String(h).padStart(2,'0')}:00`);
+  SLOTS.push(`${String(h).padStart(2,'0')}:30`);
+}
+
+// blocks: { day, slot, catId, label, duration (in slots) }
+let blocks = [];
+let dragCatId = null;   // dragging from palette
+let dragBlockIdx = null; // dragging existing block
+let pendingCell = null;  // { day, slotIdx } waiting for modal
+let selectedCat = CATS[0].id;
+
+// ── BUILD PALETTE ──
+function buildPalette() {
+  const pal = document.getElementById('palette');
+  pal.innerHTML = '';
+  CATS.forEach(cat => {
+    const el = document.createElement('div');
+    el.className = 'palette-block';
+    el.draggable = true;
+    el.style.background = cat.color + '22';
+    el.style.borderLeftColor = cat.color;
+    el.innerHTML = `<span style="font-size:15px">${cat.emoji}</span><span>${cat.label}</span>`;
+    el.addEventListener('dragstart', e => {
+      dragCatId = cat.id;
+      dragBlockIdx = null;
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+    el.addEventListener('dragend', () => { dragCatId = null; });
+    pal.appendChild(el);
+  });
+}
+
+// ── BUILD CAT CHIPS IN MODAL ──
+function buildCatChips() {
+  const wrap = document.getElementById('cat-chips');
+  wrap.innerHTML = '';
+  CATS.forEach(cat => {
+    const el = document.createElement('div');
+    el.className = 'cat-chip' + (cat.id === selectedCat ? ' selected' : '');
+    el.style.background = cat.color + '33';
+    el.style.borderColor = cat.id === selectedCat ? cat.color : 'transparent';
+    el.textContent = cat.emoji + ' ' + cat.label.split('/')[0].trim();
+    el.onclick = () => {
+      selectedCat = cat.id;
+      buildCatChips();
+    };
+    wrap.appendChild(el);
+  });
+}
+
+// ── BUILD GRID ──
+function buildGrid() {
+  // Header
+  const hdr = document.getElementById('grid-header');
+  hdr.innerHTML = '<div class="corner"></div>';
+  DAYS.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'day-head';
+    el.textContent = d;
+    hdr.appendChild(el);
+  });
+
+  // Body
+  const body = document.getElementById('grid-body');
+  body.innerHTML = '';
+
+  SLOTS.forEach((slot, si) => {
+    // Time label
+    const tl = document.createElement('div');
+    tl.className = 'time-label';
+    tl.textContent = slot.endsWith(':00') ? slot : '';
+    body.appendChild(tl);
+
+    // Day cells
+    DAYS.forEach((day, di) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (slot.endsWith(':30') ? ' half-hour' : '');
+      cell.dataset.day = di;
+      cell.dataset.slot = si;
+
+      // Click to add
+      cell.addEventListener('click', e => {
+        if (e.target.classList.contains('block-delete') || e.target.classList.contains('resize-handle')) return;
+        if (e.target.closest('.grid-block')) return;
+        pendingCell = { day: di, slotIdx: si };
+        openModal();
+      });
+
+      // Dragover / drop
+      cell.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        cell.classList.add('drag-over');
+      });
+      cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
+      cell.addEventListener('drop', e => {
+        e.preventDefault();
+        cell.classList.remove('drag-over');
+        const day = parseInt(cell.dataset.day);
+        const slotIdx = parseInt(cell.dataset.slot);
+
+        if (dragBlockIdx !== null) {
+          // Move existing block
+          blocks[dragBlockIdx].day = day;
+          blocks[dragBlockIdx].slot = slotIdx;
+          dragBlockIdx = null;
+        } else if (dragCatId) {
+          // New block from palette — default 2 slots (1h)
+          addBlock(day, slotIdx, dragCatId, '', 2);
+          dragCatId = null;
+        }
+        renderBlocks();
+      });
+
+      body.appendChild(cell);
+    });
+  });
+}
+
+// ── MODAL ──
+function openModal() {
+  selectedCat = CATS[0].id;
+  buildCatChips();
+  document.getElementById('modal-label').value = '';
+  document.getElementById('modal-duration').value = '2';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('modal-label').focus(), 100);
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  pendingCell = null;
+}
+function confirmAdd() {
+  if (!pendingCell) return closeModal();
+  const dur = parseInt(document.getElementById('modal-duration').value);
+  const label = document.getElementById('modal-label').value.trim();
+  addBlock(pendingCell.day, pendingCell.slotIdx, selectedCat, label, dur);
+  renderBlocks();
+  closeModal();
+}
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── BLOCKS ──
+function addBlock(day, slot, catId, label, duration) {
+  // Clamp duration so it doesn't overflow
+  const maxDur = SLOTS.length - slot;
+  duration = Math.min(duration, maxDur);
+  blocks.push({ day, slot, catId, label, duration });
+}
+
+function renderBlocks() {
+  // Remove all existing grid-blocks
+  document.querySelectorAll('.grid-block').forEach(el => el.remove());
+
+  blocks.forEach((b, idx) => {
+    const cat = CATS.find(c => c.id === b.catId);
+    if (!cat) return;
+
+    // Find the cell at this position
+    const cell = document.querySelector(`.cell[data-day="${b.day}"][data-slot="${b.slot}"]`);
+    if (!cell) return;
+
+    const el = document.createElement('div');
+    el.className = 'grid-block';
+    el.draggable = true;
+    el.style.background = cat.color + 'cc';
+    el.style.borderLeftColor = 'rgba(255,255,255,0.4)';
+
+    // Height spans duration slots
+    const cellH = 52; // var(--cell-h) + gap approximation
+    el.style.height = (b.duration * cellH - 6) + 'px';
+    el.style.zIndex = 10 + idx;
+
+    const timeStart = SLOTS[b.slot];
+    const endSlotIdx = Math.min(b.slot + b.duration, SLOTS.length - 1);
+    const timeEnd = SLOTS[endSlotIdx] || '20:00';
+
+    el.innerHTML = `
+      <div style="font-size:13px;">${cat.emoji} ${b.label || cat.label}</div>
+      <div class="block-label">${timeStart} – ${timeEnd}</div>
+      <div class="block-delete" title="Supprimer">×</div>
+      <div class="resize-handle"></div>
+    `;
+
+    // Delete
+    el.querySelector('.block-delete').addEventListener('click', e => {
+      e.stopPropagation();
+      blocks.splice(idx, 1);
+      renderBlocks();
+    });
+
+    // Drag to move
+    el.addEventListener('dragstart', e => {
+      dragBlockIdx = idx;
+      dragCatId = null;
+      e.dataTransfer.effectAllowed = 'move';
+      e.stopPropagation();
+    });
+    el.addEventListener('dragend', () => { dragBlockIdx = null; });
+
+    // Resize
+    let resizing = false, startY = 0, startDur = 0;
+    el.querySelector('.resize-handle').addEventListener('mousedown', e => {
+      e.stopPropagation();
+      resizing = true;
+      startY = e.clientY;
+      startDur = b.duration;
+      document.addEventListener('mousemove', onResizeMove);
+      document.addEventListener('mouseup', onResizeUp);
+    });
+    function onResizeMove(e) {
+      if (!resizing) return;
+      const delta = Math.round((e.clientY - startY) / 54);
+      const newDur = Math.max(1, Math.min(startDur + delta, SLOTS.length - b.slot));
+      if (newDur !== b.duration) {
+        b.duration = newDur;
+        renderBlocks();
+      }
+    }
+    function onResizeUp() {
+      resizing = false;
+      document.removeEventListener('mousemove', onResizeMove);
+      document.removeEventListener('mouseup', onResizeUp);
+    }
+
+    cell.appendChild(el);
+  });
+
+  updateStats();
+}
+
+// ── STATS ──
+function updateStats() {
+  const totals = {};
+  CATS.forEach(c => totals[c.id] = 0);
+  blocks.forEach(b => { totals[b.catId] = (totals[b.catId] || 0) + b.duration; });
+  const totalSlots = Object.values(totals).reduce((a, b) => a + b, 0);
+
+  const panel = document.getElementById('stats-panel');
+  panel.innerHTML = '';
+
+  CATS.forEach(cat => {
+    const slots = totals[cat.id] || 0;
+    if (slots === 0 && totalSlots > 0) return; // hide empty cats when there's content
+    const hrs = (slots * 0.5).toFixed(1).replace('.0','');
+    const pct = totalSlots > 0 ? Math.round((slots / totalSlots) * 100) : 0;
+
+    panel.innerHTML += `
+      <div class="stat-row">
+        <div class="stat-color" style="background:${cat.color}"></div>
+        <div class="stat-name">${cat.emoji} ${cat.label.split('/')[0].trim()}</div>
+        <div class="stat-val">${hrs}h</div>
+      </div>
+      <div class="stat-bar-wrap">
+        <div class="stat-bar" style="width:${pct}%;background:${cat.color}"></div>
+      </div>
+    `;
+  });
+
+  if (totalSlots === 0) {
+    panel.innerHTML = '<div style="font-size:11px;color:var(--gray-light)">Aucun bloc placé pour l\'instant.</div>';
+  }
+
+  // Alert: prospection < 20%
+  const prosPct = totalSlots > 0
+    ? ((totals['tel'] + totals['terrain']) / totalSlots) * 100
+    : 0;
+  document.getElementById('alert-box').classList.toggle('visible', totalSlots > 0 && prosPct < 20);
+}
+
+// ── CLEAR ──
+function clearAll() {
+  if (!confirm('Effacer tous les blocs ?')) return;
+  blocks = [];
+  renderBlocks();
+}
+
+// ── EXPORT PNG ──
+async function exportPNG() {
+  const el = document.getElementById('grid-wrapper');
+  const name = document.getElementById('conseiller-name').value || 'semaine-type';
+  try {
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#1a1a1a',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+    const link = document.createElement('a');
+    link.download = `${name.replace(/\s+/g,'-')}-semaine-type.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Export indisponible dans cet aperçu. Utilisez le bouton Imprimer.');
+  }
+}
+
+// ── INIT ──
+buildPalette();
+buildGrid();
+updateStats();
+</script>
+</body>
+</html>

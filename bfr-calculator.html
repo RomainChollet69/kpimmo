@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur BFR — Level Up ! Efficity</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #F5C518;
+    --yellow-dark: #d4a900;
+    --yellow-light: #fff9e0;
+    --black: #0f0f0f;
+    --dark: #1a1a1a;
+    --dark2: #242424;
+    --gray: #3a3a3a;
+    --gray-light: #888;
+    --white: #ffffff;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --orange: #f39c12;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--dark);
+    border-bottom: 3px solid var(--yellow);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .logo span { color: var(--yellow); }
+  .badge {
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    text-transform: uppercase;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--dark);
+    padding: 48px 32px 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--gray);
+  }
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .hero h1 em {
+    color: var(--yellow);
+    font-style: normal;
+  }
+  .hero p {
+    color: var(--gray-light);
+    font-size: 16px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    background: var(--dark);
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+    min-width: fit-content;
+  }
+  .step-dot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .step-dot .num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray);
+    color: var(--gray-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all .3s;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+  }
+  .step-dot.active .num {
+    background: var(--yellow);
+    color: var(--black);
+    border-color: var(--yellow);
+  }
+  .step-dot.done .num {
+    background: var(--green);
+    color: var(--white);
+    border-color: var(--green);
+  }
+  .step-dot .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color .3s;
+  }
+  .step-dot.active .label { color: var(--yellow); }
+  .step-dot.done .label { color: var(--green); }
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--gray);
+    margin: 0 8px;
+    min-width: 20px;
+    transition: background .3s;
+  }
+  .step-line.done { background: var(--green); }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    animation: fadeIn .4s ease;
+  }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .section-title span { color: var(--yellow); }
+  .section-subtitle {
+    color: var(--gray-light);
+    font-size: 14px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--gray);
+  }
+
+  /* ── FIELD GROUPS ── */
+  .field-group {
+    background: var(--dark2);
+    border: 1px solid var(--gray);
+    border-left: 4px solid var(--yellow);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .field-group-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .field-group-title .icon { font-size: 18px; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .field-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .field-label {
+    font-size: 14px;
+    color: #ccc;
+    font-weight: 500;
+  }
+  .field-hint {
+    font-size: 11px;
+    color: var(--gray-light);
+    margin-top: 2px;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-wrap .currency {
+    position: absolute;
+    right: 12px;
+    color: var(--gray-light);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  input[type="number"] {
+    background: var(--black);
+    border: 1px solid var(--gray);
+    color: var(--white);
+    padding: 10px 36px 10px 14px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    width: 140px;
+    text-align: right;
+    transition: border-color .2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--yellow);
+  }
+  input[type="number"].highlight {
+    border-color: var(--yellow);
+    background: rgba(245,197,24,0.06);
+  }
+
+  select {
+    background: var(--black);
+    border: 1px solid var(--gray);
+    color: var(--white);
+    padding: 10px 14px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    width: 200px;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  select:focus { outline: none; border-color: var(--yellow); }
+
+  /* ── TOGGLE EXTRA ── */
+  .toggle-extra {
+    background: none;
+    border: none;
+    color: var(--yellow);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 8px 0 0;
+    text-decoration: underline;
+    display: block;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 32px;
+  }
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--black);
+  }
+  .btn-primary:hover {
+    background: var(--yellow-dark);
+    transform: translateY(-2px);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--gray-light);
+    border: 1px solid var(--gray);
+  }
+  .btn-secondary:hover { color: var(--white); border-color: var(--white); }
+
+  /* ── RESULTS ── */
+  .results-hero {
+    background: var(--yellow);
+    color: var(--black);
+    padding: 32px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .results-hero .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+  .results-hero .amount {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(52px, 10vw, 80px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+  .results-hero .sublabel {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 500px) { .results-grid { grid-template-columns: 1fr; } }
+
+  .result-card {
+    background: var(--dark2);
+    border: 1px solid var(--gray);
+    padding: 20px;
+  }
+  .result-card.accent { border-left: 4px solid var(--yellow); }
+  .result-card .card-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    margin-bottom: 8px;
+  }
+  .result-card .card-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    color: var(--yellow);
+    line-height: 1;
+  }
+  .result-card .card-sub {
+    font-size: 12px;
+    color: var(--gray-light);
+    margin-top: 4px;
+  }
+
+  /* ── PALIERS ── */
+  .paliers-section {
+    background: var(--dark2);
+    border: 1px solid var(--gray);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .paliers-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    margin-bottom: 16px;
+  }
+
+  .palier-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: opacity .3s;
+  }
+  .palier-row:last-child { border-bottom: none; }
+  .palier-row.current { opacity: 1; }
+  .palier-row.faded { opacity: 0.35; }
+
+  .palier-bar-wrap { position: relative; height: 6px; background: var(--gray); flex: 1; }
+  .palier-bar-fill {
+    position: absolute;
+    left: 0; top: 0; height: 100%;
+    background: var(--yellow);
+    transition: width .8s cubic-bezier(.4,0,.2,1);
+  }
+  .palier-bar-fill.green { background: var(--green); }
+
+  .palier-label {
+    font-size: 13px;
+    color: #ccc;
+  }
+  .palier-label strong { color: var(--yellow); }
+  .palier-label.current-hl strong { color: var(--green); }
+
+  .palier-pct {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--white);
+    width: 52px;
+    text-align: right;
+  }
+  .palier-pct.active { color: var(--yellow); }
+
+  /* ── MANDATS BREAKDOWN ── */
+  .mandats-box {
+    background: var(--dark2);
+    border: 1px solid var(--gray);
+    border-top: 4px solid var(--yellow);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .mandats-box h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .mandats-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+  }
+  .mandats-stat:last-child { border-bottom: none; }
+  .mandats-stat .stat-label { color: #ccc; }
+  .mandats-stat .stat-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--yellow);
+  }
+  .mandats-stat .stat-value.big {
+    font-size: 36px;
+    color: var(--white);
+  }
+
+  /* ── SAVOIR PLUS ── */
+  .paliers-info {
+    display: none;
+    background: var(--black);
+    border: 1px solid var(--yellow);
+    padding: 20px 24px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #ccc;
+    animation: fadeIn .3s ease;
+  }
+  .paliers-info.open { display: block; }
+  .paliers-info table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .paliers-info th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--gray);
+  }
+  .paliers-info td { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+  .paliers-info td:last-child { text-align: right; font-weight: 600; color: var(--yellow); }
+  .btn-info {
+    background: none;
+    border: 1px solid var(--gray);
+    color: var(--gray-light);
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 12px;
+  }
+  .btn-info:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  /* ── DECOMPO ── */
+  .decompo {
+    background: var(--dark2);
+    border: 1px solid var(--gray);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .decompo h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    margin-bottom: 14px;
+  }
+  .decompo-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #ccc;
+  }
+  .decompo-line:last-child { border-bottom: none; font-weight: 600; color: var(--white); }
+  .decompo-line .dval { font-weight: 600; }
+  .decompo-line.total { border-top: 2px solid var(--yellow); margin-top: 6px; padding-top: 10px; }
+  .decompo-line.total .dval { color: var(--yellow); font-size: 18px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; }
+
+  /* ── PRINT ── */
+  .print-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1px solid var(--gray);
+    color: var(--gray-light);
+    padding: 10px 20px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-bottom: 24px;
+  }
+  .print-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  .reset-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: none;
+    border: 1px solid var(--gray);
+    color: var(--gray-light);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all .2s;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--dark);
+    border-top: 1px solid var(--gray);
+    padding: 20px 32px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-light);
+  }
+  footer strong { color: var(--yellow); }
+
+  /* ── EXTRA FIELDS hidden ── */
+  .extra-fields { display: none; }
+  .extra-fields.open { display: block; }
+
+  @media print {
+    header, .progress-bar, .btn-row, .print-btn, .reset-btn, footer, .btn-info { display: none !important; }
+    body { background: white; color: black; }
+    .results-hero { background: #f5c518 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .result-card, .mandats-box, .paliers-section, .decompo { border: 1px solid #ccc !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">LEVEL <span>UP !</span> <span style="font-size:16px;font-weight:400;color:var(--gray-light);">× Efficity</span></div>
+  <div class="badge">Calculateur BFR</div>
+</header>
+
+<div class="hero">
+  <h1>Combien dois-je <em>vraiment</em> gagner ?</h1>
+  <p>Calcule ton Besoin en Fonds de Roulement et le chiffre d'affaires à atteindre pour vivre de ton activité.</p>
+</div>
+
+<div class="progress-bar">
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot-1" onclick="goToStep(1)">
+      <div class="num">1</div>
+      <div class="label">Charges</div>
+    </div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step-dot" id="dot-2" onclick="goToStep(2)">
+      <div class="num">2</div>
+      <div class="label">Objectifs</div>
+    </div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step-dot" id="dot-3" onclick="goToStep(3)">
+      <div class="num">3</div>
+      <div class="label">Activité</div>
+    </div>
+    <div class="step-line" id="line-3"></div>
+    <div class="step-dot" id="dot-4" onclick="goToStep(4)">
+      <div class="num">4</div>
+      <div class="label">Résultats</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══ STEP 1 : CHARGES ══ -->
+  <div class="section active" id="step-1">
+    <div class="section-title">Mes <span>charges mensuelles</span></div>
+    <div class="section-subtitle">Renseigne tes dépenses réelles. Chaque champ est pré-rempli avec une valeur indicative.</div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">🏠</span> Charges fixes personnelles</div>
+      <div class="field-row">
+        <div><div class="field-label">Loyer / remboursement crédit</div></div>
+        <div class="input-wrap"><input type="number" id="loyer" value="900" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Alimentation & courses</div></div>
+        <div class="input-wrap"><input type="number" id="alim" value="400" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Mutuelle / santé</div></div>
+        <div class="input-wrap"><input type="number" id="sante" value="120" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Assurances (habitation, auto…)</div></div>
+        <div class="input-wrap"><input type="number" id="assur" value="100" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Abonnements (téléphone, internet, streaming…)</div></div>
+        <div class="input-wrap"><input type="number" id="abos" value="80" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Transport personnel (carburant, transports…)</div></div>
+        <div class="input-wrap"><input type="number" id="transport" value="150" min="0"><span class="currency">€</span></div>
+      </div>
+      <button class="toggle-extra" onclick="toggleExtra('extra-perso')">+ Ajouter d'autres charges perso</button>
+      <div class="extra-fields" id="extra-perso">
+        <div class="field-row" style="margin-top:12px">
+          <div><div class="field-label">Crédits à la consommation</div></div>
+          <div class="input-wrap"><input type="number" id="credits" value="0" min="0"><span class="currency">€</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">Enfants / famille</div></div>
+          <div class="input-wrap"><input type="number" id="famille" value="0" min="0"><span class="currency">€</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">Loisirs & sorties</div></div>
+          <div class="input-wrap"><input type="number" id="loisirs" value="0" min="0"><span class="currency">€</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">Épargne mensuelle souhaitée</div></div>
+          <div class="input-wrap"><input type="number" id="epargne" value="0" min="0"><span class="currency">€</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">💼</span> Charges professionnelles</div>
+      <div class="field-row">
+        <div><div class="field-label">Pack Efficity (base)</div><div class="field-hint">Pack standard 105 € HT/mois</div></div>
+        <div class="input-wrap"><input type="number" id="pack_efficity" value="105" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Option Estimations Efficity</div><div class="field-hint">+84 € HT/mois si souscrite</div></div>
+        <div class="input-wrap"><input type="number" id="pack_estim" value="84" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Carburant professionnel</div></div>
+        <div class="input-wrap"><input type="number" id="carbu_pro" value="150" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Outils & logiciels divers</div></div>
+        <div class="input-wrap"><input type="number" id="outils" value="50" min="0"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div><div class="field-label">Marketing & communication (flyers, panneau…)</div></div>
+        <div class="input-wrap"><input type="number" id="marketing" value="80" min="0"><span class="currency">€</span></div>
+      </div>
+      <button class="toggle-extra" onclick="toggleExtra('extra-pro')">+ Ajouter d'autres charges pro</button>
+      <div class="extra-fields" id="extra-pro">
+        <div class="field-row" style="margin-top:12px">
+          <div><div class="field-label">Frais de déplacement / repas clients</div></div>
+          <div class="input-wrap"><input type="number" id="repas" value="0" min="0"><span class="currency">€</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">Formation continue</div><div class="field-hint">Ex : 150 € / 12 = ~13 €/mois</div></div>
+          <div class="input-wrap"><input type="number" id="formation" value="13" min="0"><span class="currency">€</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">Comptable / expert-comptable</div></div>
+          <div class="input-wrap"><input type="number" id="comptable" value="0" min="0"><span class="currency">€</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goToStep(2)">Étape suivante →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2 : OBJECTIFS ══ -->
+  <div class="section" id="step-2">
+    <div class="section-title">Mon <span>objectif de vie</span></div>
+    <div class="section-subtitle">Ce que tu veux vous mettre dans ta poche chaque mois, net de tout.</div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">🎯</span> Revenu net souhaité</div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Revenu net mensuel souhaité</div>
+          <div class="field-hint">Ce que tu touches après cotisations, avant impôt sur le revenu</div>
+        </div>
+        <div class="input-wrap"><input type="number" id="revenu_net" value="2500" min="0" class="highlight"><span class="currency">€</span></div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">⚙️</span> Statut & cotisations</div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Taux de cotisations sociales</div>
+          <div class="field-hint">Auto-entrepreneur : 22 % sur le chiffre d'affaires rétrocédé</div>
+        </div>
+        <div>
+          <select id="taux_cotis">
+            <option value="22" selected>Auto-entrepreneur — 22 %</option>
+            <option value="25">Micro-entreprise BIC — 25 %</option>
+            <option value="28">Portage salarial — ~28 %</option>
+            <option value="0">Autre / déjà inclus</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(1)">← Retour</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Étape suivante →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3 : ACTIVITE ══ -->
+  <div class="section" id="step-3">
+    <div class="section-title">Mon <span>activité</span></div>
+    <div class="section-subtitle">Ces données permettent de calculer combien de mandats tu dois signer.</div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">🏡</span> Paramètres de vente</div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Commission moyenne par vente HT</div>
+          <div class="field-hint">Honoraires facturés à l'acheteur, côté Efficity</div>
+        </div>
+        <div class="input-wrap"><input type="number" id="commission_moy" value="5500" min="100" class="highlight"><span class="currency">€</span></div>
+      </div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Palier de démarrage</div>
+          <div class="field-hint">Chez Efficity, chaque conseiller repart toujours de 70 % au 1er janvier. Les paliers s'accumulent au fil du CA annuel.</div>
+        </div>
+        <div style="color:var(--yellow);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;padding-right:4px;">70 % → 78 → 90 → 100 %</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep(2)">← Retour</button>
+      <button class="btn btn-primary" onclick="calculate()">Calculer mon BFR ⚡</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4 : RÉSULTATS ══ -->
+  <div class="section" id="step-4">
+    <div class="section-title">Mes <span>résultats</span></div>
+    <div class="section-subtitle">Voici ce que tu dois générer pour atteindre ton objectif de vie.</div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Imprimer / Sauvegarder ce résumé</button>
+
+    <!-- BFR HERO -->
+    <div class="results-hero">
+      <div class="label">Mon Besoin en Fonds de Roulement mensuel</div>
+      <div class="amount" id="res-bfr-mois">— €</div>
+      <div class="sublabel">soit <strong id="res-bfr-an">—</strong> par an</div>
+    </div>
+
+    <!-- DECOMPO -->
+    <div class="decompo">
+      <h4>Décomposition du BFR</h4>
+      <div class="decompo-line"><span>Charges fixes personnelles</span><span class="dval" id="dec-perso">—</span></div>
+      <div class="decompo-line"><span>Charges professionnelles</span><span class="dval" id="dec-pro">—</span></div>
+      <div class="decompo-line"><span>Revenu net souhaité</span><span class="dval" id="dec-revenu">—</span></div>
+      <div class="decompo-line"><span>Cotisations sociales (sur rétrocession)</span><span class="dval" id="dec-cotis">—</span></div>
+      <div class="decompo-line total"><span>= BFR mensuel total</span><span class="dval" id="dec-total">—</span></div>
+    </div>
+
+    <!-- GRID CA + MANDATS -->
+    <div class="results-grid">
+      <div class="result-card accent">
+        <div class="card-label">CA HT à facturer / mois</div>
+        <div class="card-value" id="res-ca-mois">—</div>
+        <div class="card-sub">moyenne mensuelle</div>
+      </div>
+      <div class="result-card accent">
+        <div class="card-label">CA HT à facturer / an</div>
+        <div class="card-value" id="res-ca-an">—</div>
+        <div class="card-sub" id="res-ca-palier">palier atteint : —</div>
+      </div>
+    </div>
+
+    <!-- MANDATS -->
+    <div class="mandats-box">
+      <h3>🏡 Mandats à signer</h3>
+      <div class="mandats-stat">
+        <span class="stat-label">Commission moyenne par vente</span>
+        <span class="stat-value" id="res-commission">—</span>
+      </div>
+      <div class="mandats-stat">
+        <span class="stat-label">Rétrocession moyenne effective (paliers)</span>
+        <span class="stat-value" id="res-retro">—</span>
+      </div>
+      <div class="mandats-stat">
+        <span class="stat-label">Revenu net par vente (après cotisations)</span>
+        <span class="stat-value" id="res-net-vente">—</span>
+      </div>
+      <div class="mandats-stat" style="margin-top:12px;padding-top:12px;border-top:2px solid var(--yellow)">
+        <span class="stat-label" style="font-weight:600;color:var(--white);">Mandats à signer par mois</span>
+        <span class="stat-value big" id="res-mandats-mois">—</span>
+      </div>
+      <div class="mandats-stat">
+        <span class="stat-label" style="font-weight:600;color:var(--white);">Mandats à signer par an</span>
+        <span class="stat-value big" id="res-mandats-an">—</span>
+      </div>
+    </div>
+
+    <!-- PALIERS -->
+    <div class="paliers-section">
+      <div class="paliers-title">📊 Ta position dans les paliers Efficity</div>
+      <div id="paliers-display"></div>
+      <button class="btn-info" onclick="togglePaliersInfo()">En savoir plus sur les paliers →</button>
+      <div class="paliers-info" id="paliers-info">
+        <strong style="color:var(--yellow)">Grille de rétrocession progressive Efficity</strong>
+        <table>
+          <tr><th>Tranche CA annuel HT</th><th>Taux reversé</th></tr>
+          <tr><td>0 € → 25 000 €</td><td>70 %</td></tr>
+          <tr><td>25 001 € → 50 000 €</td><td>78 %</td></tr>
+          <tr><td>50 001 € → 150 000 €</td><td>90 %</td></tr>
+          <tr><td>Au-delà de 150 000 €</td><td>100 %</td></tr>
+        </table>
+        <p style="margin-top:12px;font-size:12px;color:var(--gray-light)">Les paliers s'appliquent par tranches progressives sur le CA annuel cumulé. Au-delà de 90 % de rétrocession, un ajustement peut s'appliquer — se renseigner directement auprès d'Efficity.</p>
+      </div>
+    </div>
+
+    <div class="btn-row" style="justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <button class="btn btn-secondary" onclick="goToStep(3)">← Modifier mes données</button>
+      <button class="btn btn-primary" onclick="goToStep(1); resetAll()">Recommencer</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Outil pédagogique <strong>Level Up ! 2.0</strong> — Efficity · Les résultats sont indicatifs et basés sur les données saisies. Consulte un expert-comptable pour un calcul personnalisé.
+</footer>
+
+<script>
+  let currentStep = 1;
+
+  function goToStep(n) {
+    if (n > currentStep + 1) return; // prevent skipping
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+
+    for (let i = 1; i <= 4; i++) {
+      const dot = document.getElementById('dot-' + i);
+      dot.classList.remove('active', 'done');
+      if (i < n) dot.classList.add('done');
+      else if (i === n) dot.classList.add('active');
+    }
+    for (let i = 1; i <= 3; i++) {
+      const line = document.getElementById('line-' + i);
+      if (line) line.classList.toggle('done', i < n);
+    }
+
+    currentStep = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleExtra(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+
+  function togglePaliersInfo() {
+    document.getElementById('paliers-info').classList.toggle('open');
+  }
+
+  function val(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+  }
+
+  function fmt(n) {
+    return n.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' €';
+  }
+
+  // ── PALIERS EFFICITY (fixes, remise à zéro chaque 1er janvier) ──
+  const PALIERS = [
+    { min: 0,      max: 25000,   taux: 0.70, label: '0 → 25 000 €'      },
+    { min: 25000,  max: 50000,   taux: 0.78, label: '25 001 → 50 000 €' },
+    { min: 50000,  max: 150000,  taux: 0.90, label: '50 001 → 150 000 €'},
+    { min: 150000, max: Infinity, taux: 1.00, label: '+ 150 000 €'       },
+  ];
+
+  // Calcule la rétrocession brute totale pour un CA annuel donné (calcul progressif par tranches)
+  function retroProgressive(caAn) {
+    let retro = 0;
+    for (const p of PALIERS) {
+      if (caAn <= p.min) break;
+      const tranche = Math.min(caAn, p.max) - p.min;
+      retro += tranche * p.taux;
+    }
+    return retro;
+  }
+
+  // Trouve le CA annuel nécessaire pour obtenir une rétrocession brute cible
+  // par dichotomie (la fonction est monotone croissante)
+  function caNecessaire(retroCible) {
+    let lo = 0, hi = 2000000;
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
+      retroProgressive(mid) < retroCible ? lo = mid : hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+
+  // Taux moyen effectif de rétrocession pour un CA annuel donné
+  function tauxMoyen(caAn) {
+    return caAn > 0 ? retroProgressive(caAn) / caAn : 0.70;
+  }
+
+  // Palier atteint pour un CA annuel donné
+  function palierAtteint(caAn) {
+    for (let i = PALIERS.length - 1; i >= 0; i--) {
+      if (caAn > PALIERS[i].min) return PALIERS[i];
+    }
+    return PALIERS[0];
+  }
+
+  function calculate() {
+    // ── CHARGES ──
+    const chargesPerso = val('loyer') + val('alim') + val('sante') + val('assur') +
+      val('abos') + val('transport') + val('credits') + val('famille') + val('loisirs') + val('epargne');
+    const chargesPro = val('pack_efficity') + val('pack_estim') + val('carbu_pro') +
+      val('outils') + val('marketing') + val('repas') + val('formation') + val('comptable');
+
+    // ── PARAMS ──
+    const revenuNet   = val('revenu_net');
+    const tauxCotis   = val('taux_cotis') / 100;
+    const commissionMoy = val('commission_moy');
+
+    // ── REVENU BRUT AVANT COTISATIONS ──
+    // Les cotisations auto-entrepreneur sont calculées sur la rétrocession brute perçue.
+    // revenuBrut = revenuNet / (1 - tauxCotis)
+    const revenuBrut = tauxCotis < 1 ? revenuNet / (1 - tauxCotis) : revenuNet;
+    const cotisations = revenuBrut - revenuNet;
+
+    // ── BFR MENSUEL ──
+    // BFR = charges perso + charges pro + revenu net + cotisations
+    const bfrMois = chargesPerso + chargesPro + revenuNet + cotisations;
+    const bfrAn   = bfrMois * 12;
+
+    // ── CA ANNUEL NÉCESSAIRE (calcul progressif par paliers) ──
+    // On cherche le CA annuel tel que :
+    //   retroProgressive(caAn) × (1 - tauxCotis) = revenuBrut × 12 + chargesPro × 12
+    // Soit rétrocession brute annuelle nécessaire :
+    //   retroCibleAn = (revenuBrut + chargesPerso + chargesPro) × 12
+    // (charges perso et pro sont payées depuis la rétrocession nette)
+    // Plus précisément : retroBrute × (1 - tauxCotis) doit couvrir : revenuNet + chargesPerso + chargesPro (mensuels × 12)
+    // → retroBruteCible = (revenuNet + chargesPerso + chargesPro) / (1 - tauxCotis) × 12
+    const retroBruteCibleAn = tauxCotis < 1
+      ? (revenuNet + chargesPerso + chargesPro) / (1 - tauxCotis) * 12
+      : (revenuNet + chargesPerso + chargesPro) * 12;
+
+    const caAn   = caNecessaire(retroBruteCibleAn);
+    const caMois = caAn / 12;
+
+    // ── RÉTROCESSION RÉELLE & TAUX MOYEN ──
+    const retroAn      = retroProgressive(caAn);
+    const tauxMoyEff   = tauxMoyen(caAn);
+    const palier       = palierAtteint(caAn);
+
+    // ── PAR VENTE ──
+    // Commission moyenne × taux moyen effectif = rétrocession brute par vente
+    // Attention : en réalité chaque vente se place dans la tranche courante,
+    // mais pour simplifier on utilise le taux moyen annuel comme approximation.
+    const retroBruteParVente = commissionMoy * tauxMoyEff;
+    const netParVente        = retroBruteParVente * (1 - tauxCotis);
+    const mandatsAn          = commissionMoy > 0 ? caAn / commissionMoy : 0;
+    const mandatsMois        = mandatsAn / 12;
+
+    // ── AFFICHAGE BFR ──
+    document.getElementById('res-bfr-mois').textContent = fmt(bfrMois);
+    document.getElementById('res-bfr-an').textContent   = fmt(bfrAn) + ' / an';
+
+    document.getElementById('dec-perso').textContent   = fmt(chargesPerso);
+    document.getElementById('dec-pro').textContent     = fmt(chargesPro);
+    document.getElementById('dec-revenu').textContent  = fmt(revenuNet);
+    document.getElementById('dec-cotis').textContent   = fmt(cotisations);
+    document.getElementById('dec-total').textContent   = fmt(bfrMois);
+
+    // ── AFFICHAGE CA ──
+    document.getElementById('res-ca-mois').textContent  = fmt(caMois);
+    document.getElementById('res-ca-an').textContent    = fmt(caAn);
+    document.getElementById('res-ca-palier').textContent = 'Palier atteint : ' + palier.taux * 100 + '%';
+
+    // ── AFFICHAGE MANDATS ──
+    document.getElementById('res-commission').textContent  = fmt(commissionMoy);
+    document.getElementById('res-retro').textContent       = (tauxMoyEff * 100).toFixed(1) + ' % (taux moyen effectif)';
+    document.getElementById('res-net-vente').textContent   = fmt(netParVente);
+    document.getElementById('res-mandats-mois').textContent = mandatsMois.toFixed(1).replace('.', ',');
+    document.getElementById('res-mandats-an').textContent   = Math.ceil(mandatsAn);
+
+    // ── PALIERS DISPLAY ──
+    let html = '';
+    PALIERS.forEach((p, idx) => {
+      const trancheMax    = p.max === Infinity ? caAn * 1.2 : p.max; // juste pour la barre visuelle
+      const trancheMin    = p.min;
+      const caAtteintDans = Math.max(0, Math.min(caAn, p.max) - p.min); // CA consommé dans cette tranche
+      const trancheTaille = p.max === Infinity ? Math.max(caAn - p.min, 50000) : p.max - p.min;
+      const fillPct       = p.max === Infinity
+        ? (caAn > p.min ? Math.min(100, ((caAn - p.min) / 50000) * 100) : 0)
+        : Math.min(100, (caAtteintDans / trancheTaille) * 100);
+      const isActive   = caAn > p.min;
+      const isCurrent  = palier.min === p.min;
+      const barColor   = caAn >= p.max ? 'var(--green)' : isCurrent ? 'var(--yellow)' : 'var(--gray)';
+
+      html += `
+        <div class="palier-row ${!isActive && !isCurrent ? 'faded' : ''}">
+          <div class="palier-label ${isCurrent ? 'current-hl' : ''}">
+            <strong>${p.taux * 100}%</strong> — CA ${p.label}
+            ${isCurrent ? ' <span style="color:var(--yellow);font-size:11px;margin-left:6px;">◀ PALIER ATTEINT</span>' : ''}
+            ${caAn >= p.max && p.max !== Infinity ? ' <span style="color:var(--green);font-size:11px;margin-left:6px;">✓ DÉPASSÉ</span>' : ''}
+          </div>
+          <div style="flex:1;height:6px;background:var(--gray);position:relative;min-width:60px;margin:0 12px;">
+            <div style="position:absolute;left:0;top:0;height:100%;width:${fillPct}%;background:${barColor};transition:width 1s cubic-bezier(.4,0,.2,1);"></div>
+          </div>
+          <div class="palier-pct ${isCurrent ? 'active' : ''}">${p.taux * 100}%</div>
+        </div>
+      `;
+    });
+
+    // Affichage du détail des tranches
+    html += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--gray);">
+      <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gray-light);margin-bottom:10px;">Détail du calcul par tranche</div>`;
+    let cumul = 0;
+    PALIERS.forEach(p => {
+      const tranche = Math.max(0, Math.min(caAn, p.max === Infinity ? caAn : p.max) - p.min);
+      if (tranche <= 0) return;
+      const retroTranche = tranche * p.taux;
+      cumul += retroTranche;
+      html += `<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:#ccc;">
+        <span>${fmt(tranche)} × ${p.taux * 100}%</span>
+        <span style="color:var(--yellow);font-weight:600;">= ${fmt(retroTranche)}</span>
+      </div>`;
+    });
+    html += `<div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;font-weight:600;color:var(--white);">
+        <span>Rétrocession brute totale</span>
+        <span style="color:var(--yellow);">${fmt(retroAn)}</span>
+      </div>`;
+    html += `</div>`;
+
+    document.getElementById('paliers-display').innerHTML = html;
+
+    goToStep(4);
+  }
+
+  function resetAll() {
+    document.querySelectorAll('input[type="number"]').forEach(i => {
+      const defaults = {
+        loyer: 900, alim: 400, sante: 120, assur: 100, abos: 80, transport: 150,
+        credits: 0, famille: 0, loisirs: 0, epargne: 0,
+        pack_efficity: 105, pack_estim: 84, carbu_pro: 150, outils: 50, marketing: 80,
+        repas: 0, formation: 13, comptable: 0,
+        revenu_net: 2500, commission_moy: 5500
+      };
+      if (defaults[i.id] !== undefined) i.value = defaults[i.id];
+    });
+    document.getElementById('taux_cotis').value = '22';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostic Mindset — Level Up ! Efficity</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --yellow: #F5C518;
+  --yellow-dark: #c9a500;
+  --black: #080808;
+  --dark: #111111;
+  --dark2: #191919;
+  --dark3: #222222;
+  --gray: #333;
+  --gray-mid: #555;
+  --gray-light: #777;
+  --white: #fff;
+  --craintif: #ef4444;
+  --insouciant: #f59e0b;
+  --realiste: #22c55e;
+  --resilience: #3b82f6;
+  --discipline: #a855f7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ══════════════════════════════
+   ÉCRAN 0 — INTRO
+══════════════════════════════ */
+#screen-intro {
+  background: var(--black);
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#screen-intro::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(245,197,24,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.intro-badge {
+  display: inline-block;
+  background: var(--yellow);
+  color: var(--black);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  margin-bottom: 28px;
+}
+.intro-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(44px, 10vw, 80px);
+  line-height: 0.95;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+.intro-title em { color: var(--yellow); font-style: normal; display: block; }
+.intro-sub {
+  color: var(--gray-light);
+  font-size: 16px;
+  max-width: 440px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+.intro-meta {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.intro-meta-item {
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-light);
+}
+.intro-meta-item strong {
+  display: block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 28px;
+  color: var(--yellow);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.intro-name-wrap {
+  max-width: 320px;
+  margin: 0 auto 24px;
+  text-align: left;
+}
+.intro-name-wrap label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  display: block;
+  margin-bottom: 8px;
+}
+.intro-name-wrap input {
+  width: 100%;
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  border-bottom: 2px solid var(--yellow);
+  color: var(--white);
+  padding: 14px 16px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.intro-name-wrap input:focus { outline: none; background: var(--dark3); }
+.intro-warning {
+  font-size: 12px;
+  color: var(--gray-mid);
+  max-width: 360px;
+  margin: 0 auto 32px;
+  font-style: italic;
+}
+
+/* ── BTN ── */
+.btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px 40px;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  display: inline-block;
+}
+.btn-primary { background: var(--yellow); color: var(--black); }
+.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.3); }
+.btn-secondary { background: transparent; color: var(--gray-light); border: 1px solid var(--gray); font-size: 14px; padding: 12px 24px; }
+.btn-secondary:hover { color: var(--white); border-color: var(--white); }
+.btn-ghost { background: transparent; border: 2px solid var(--yellow); color: var(--yellow); }
+.btn-ghost:hover { background: var(--yellow); color: var(--black); }
+
+/* ══════════════════════════════
+   ÉCRAN 1 — QUESTIONS
+══════════════════════════════ */
+#screen-quiz {
+  background: var(--dark);
+  flex-direction: column;
+}
+
+.quiz-header {
+  background: var(--black);
+  border-bottom: 1px solid var(--gray);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 50;
+}
+.quiz-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--white);
+  white-space: nowrap;
+}
+.quiz-logo span { color: var(--yellow); }
+.quiz-progress-wrap { flex: 1; max-width: 300px; }
+.quiz-progress-label {
+  font-size: 11px;
+  color: var(--gray-light);
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.quiz-progress-bar {
+  height: 4px;
+  background: var(--gray);
+  position: relative;
+}
+.quiz-progress-fill {
+  position: absolute;
+  left: 0; top: 0; height: 100%;
+  background: var(--yellow);
+  transition: width .4s ease;
+}
+
+.quiz-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.question-card {
+  max-width: 620px;
+  width: 100%;
+  animation: slideIn .35s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.q-number {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 12px;
+}
+.q-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(22px, 4vw, 34px);
+  line-height: 1.2;
+  margin-bottom: 32px;
+  color: var(--white);
+}
+.q-context {
+  font-size: 13px;
+  color: var(--gray-light);
+  margin-bottom: 28px;
+  margin-top: -20px;
+  font-style: italic;
+}
+
+.answers { display: flex; flex-direction: column; gap: 10px; }
+.answer-btn {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  color: var(--white);
+  padding: 16px 20px;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all .18s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.answer-btn::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0;
+  background: rgba(245,197,24,0.12);
+  transition: width .2s;
+}
+.answer-btn:hover { border-color: var(--yellow); transform: translateX(4px); }
+.answer-btn:hover::before { width: 100%; }
+.answer-btn.selected {
+  background: var(--yellow);
+  color: var(--black);
+  border-color: var(--yellow);
+  transform: translateX(6px);
+}
+.answer-btn.selected::before { display: none; }
+.answer-letter {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  width: 32px; height: 32px;
+  border: 2px solid var(--gray-mid);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all .18s;
+}
+.answer-btn:hover .answer-letter { border-color: var(--yellow); color: var(--yellow); }
+.answer-btn.selected .answer-letter { border-color: var(--black); color: var(--black); background: rgba(0,0,0,0.15); }
+
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray);
+}
+.quiz-dots { display: flex; gap: 6px; }
+.quiz-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gray);
+  transition: all .2s;
+}
+.quiz-dot.done { background: var(--yellow); }
+.quiz-dot.current { background: var(--yellow); transform: scale(1.4); }
+
+/* ══════════════════════════════
+   ÉCRAN 2 — REVEAL
+══════════════════════════════ */
+#screen-reveal {
+  background: var(--black);
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  flex-direction: column;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.reveal-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+}
+.reveal-glow.visible { opacity: 1; }
+
+.reveal-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.5s forwards;
+}
+.reveal-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--gray-light);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.8s forwards;
+}
+.reveal-profil {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(56px, 14vw, 96px);
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.reveal-profil.pop { opacity: 1; transform: scale(1); }
+.reveal-emoji {
+  font-size: 60px;
+  margin-bottom: 16px;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.reveal-emoji.visible { opacity: 1; }
+
+.reveal-scores {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.reveal-score-pill {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  padding: 10px 20px;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all .5s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reveal-score-pill.pop { opacity: 1; transform: translateY(0); }
+.reveal-score-pill strong { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; }
+.reveal-cta {
+  margin-top: 36px;
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+.reveal-cta.visible { opacity: 1; }
+
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* ══════════════════════════════
+   ÉCRAN 3 — RÉSULTATS
+══════════════════════════════ */
+#screen-result {
+  background: var(--dark);
+  flex-direction: column;
+  padding-bottom: 60px;
+}
+
+.result-header {
+  background: var(--black);
+  border-bottom: 3px solid var(--yellow);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.result-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+}
+.result-logo span { color: var(--yellow); }
+
+.result-body { max-width: 760px; margin: 0 auto; padding: 40px 24px; width: 100%; }
+
+/* Profil hero */
+.profil-hero {
+  padding: 36px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.profil-hero::after {
+  content: attr(data-emoji);
+  position: absolute;
+  right: -10px; bottom: -20px;
+  font-size: 120px;
+  opacity: 0.08;
+  line-height: 1;
+  pointer-events: none;
+}
+.ph-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+.ph-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.ph-desc { font-size: 15px; line-height: 1.7; max-width: 520px; opacity: 0.9; }
+
+/* Score bars */
+.scores-section { margin-bottom: 28px; }
+.score-card {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+.score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.score-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.score-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 1;
+}
+.score-bar-bg {
+  height: 8px;
+  background: var(--gray);
+  position: relative;
+  margin-bottom: 8px;
+}
+.score-bar-fill {
+  position: absolute;
+  left: 0; top: 0; height: 100%;
+  width: 0;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+.score-desc { font-size: 13px; color: var(--gray-light); }
+
+/* Recommandations */
+.reco-section { margin-bottom: 28px; }
+.reco-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 14px;
+}
+.reco-card {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  border-left: 4px solid var(--yellow);
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.reco-num {
+  background: var(--yellow);
+  color: var(--black);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.reco-content strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.reco-content span { font-size: 13px; color: var(--gray-light); line-height: 1.5; }
+
+/* Comparatif */
+.comparatif {
+  background: var(--dark2);
+  border: 1px solid var(--gray);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+.comp-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-bottom: 16px;
+}
+.comp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  text-align: center;
+}
+.comp-profil {
+  padding: 14px 10px;
+  border: 2px solid transparent;
+  transition: all .2s;
+}
+.comp-profil.current { border-color: var(--yellow); background: rgba(245,197,24,0.06); }
+.comp-profil .cp-emoji { font-size: 28px; margin-bottom: 6px; }
+.comp-profil .cp-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+.comp-profil .cp-desc { font-size: 11px; color: var(--gray-light); line-height: 1.4; }
+
+/* Engagement */
+.engagement-box {
+  background: var(--yellow);
+  color: var(--black);
+  padding: 28px 32px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+.engagement-box h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+.engagement-box p { font-size: 14px; opacity: 0.8; margin-bottom: 20px; }
+.engagement-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* Export */
+.export-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media print {
+  #screen-intro, #screen-quiz, #screen-reveal { display: none !important; }
+  #screen-result { display: flex !important; }
+  .result-header .btn, .engagement-box, .export-row { display: none !important; }
+  body { background: white; color: black; }
+  .profil-hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     ÉCRAN 0 — INTRO
+══════════════════════════════ -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-badge">Level Up ! 2.0 × Efficity</div>
+  <div class="intro-title">
+    Diagnostic
+    <em>Mindset</em>
+  </div>
+  <p class="intro-sub">15 questions pour identifier ton profil de conseiller et recevoir un plan d'action personnalisé.</p>
+
+  <div class="intro-meta">
+    <div class="intro-meta-item"><strong>15</strong>questions</div>
+    <div class="intro-meta-item"><strong>3'</strong>environ</div>
+    <div class="intro-meta-item"><strong>100%</strong>confidentiel</div>
+  </div>
+
+  <div class="intro-name-wrap">
+    <label>Ton prénom</label>
+    <input type="text" id="user-name" placeholder="SOPHIE..." maxlength="30" autocomplete="off">
+  </div>
+  <p class="intro-warning">Réponds honnêtement — pas ce que tu voudrais être, mais ce que tu es vraiment aujourd'hui. Il n'y a pas de mauvais profil.</p>
+  <button class="btn btn-primary" onclick="startQuiz()">Commencer le diagnostic →</button>
+</div>
+
+<!-- ══════════════════════════════
+     ÉCRAN 1 — QUESTIONS
+══════════════════════════════ -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div class="quiz-logo">LEVEL <span>UP !</span></div>
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-label">
+        <span id="q-label">Question 1 / 15</span>
+        <span id="q-pct">0%</span>
+      </div>
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="q-progress" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="question-card" id="question-card">
+      <!-- dynamique -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ÉCRAN 2 — REVEAL
+══════════════════════════════ -->
+<div class="screen" id="screen-reveal">
+  <div class="reveal-glow" id="reveal-glow"></div>
+  <div class="reveal-label">Ton profil</div>
+  <div class="reveal-name" id="reveal-name"></div>
+  <div class="reveal-emoji" id="reveal-emoji"></div>
+  <div class="reveal-profil" id="reveal-profil"></div>
+  <div class="reveal-scores" id="reveal-scores"></div>
+  <div class="reveal-cta" id="reveal-cta">
+    <button class="btn btn-primary" onclick="showResult()">Voir mon analyse complète →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ÉCRAN 3 — RÉSULTATS
+══════════════════════════════ -->
+<div class="screen" id="screen-result">
+  <div class="result-header">
+    <div class="result-logo">LEVEL <span>UP !</span> — Diagnostic Mindset</div>
+    <button class="btn btn-secondary" onclick="restartQuiz()">↺ Recommencer</button>
+  </div>
+
+  <div class="result-body">
+    <div class="profil-hero" id="result-profil-hero"></div>
+
+    <div class="scores-section">
+      <div class="reco-title" style="margin-bottom:16px;">📊 Tes scores détaillés</div>
+      <div class="score-card" id="sc-profil"></div>
+      <div class="score-card" id="sc-resilience"></div>
+      <div class="score-card" id="sc-discipline"></div>
+    </div>
+
+    <div class="comparatif">
+      <div class="comp-title">Les 3 profils — où tu te situes</div>
+      <div class="comp-row" id="comp-row"></div>
+    </div>
+
+    <div class="reco-section">
+      <div class="reco-title">🎯 Tes 3 recommandations personnalisées</div>
+      <div id="recos-container"></div>
+    </div>
+
+    <div class="engagement-box">
+      <h3>Et maintenant ?</h3>
+      <p>Ce diagnostic est ton point de départ. Colle ta fiche dans ton livret Level Up ! et reviens la consulter chaque semaine.</p>
+      <div class="engagement-actions">
+        <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimer ma fiche</button>
+        <button class="btn btn-primary" onclick="exportPNG()">📷 Télécharger en PNG</button>
+      </div>
+    </div>
+
+    <div class="export-row">
+      <button class="btn btn-secondary" onclick="restartQuiz()">↺ Refaire le diagnostic</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════
+// QUESTIONS (15)
+// Chaque réponse a un score par dimension :
+// C = Craintif, I = Insouciant, R = Réaliste
+// Res = Résilience (0-2), Dis = Discipline (0-2)
+// ══════════════════════════════
+const QUESTIONS = [
+  {
+    text: "Un prospect te dit 'non' après un entretien que tu pensais réussi. Ta réaction dans les 30 minutes qui suivent ?",
+    context: "Sois honnête — pas ce que tu devrais faire, ce que tu fais vraiment.",
+    answers: [
+      { text: "Je remets en question ma technique et j'hésite à rappeler les suivants.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Ça m'énerve, mais je passe à l'appel suivant sans trop y penser.", scores: { C:0, I:2, R:0, Res:1, Dis:1 } },
+      { text: "Je note ce qui n'a pas fonctionné, puis je reprends ma liste.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "Je fais une pause, parfois longue, avant de me remettre au travail.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Tu viens de signer ta meilleure vente du trimestre. Que se passe-t-il dans ta prospection la semaine suivante ?",
+    answers: [
+      { text: "Je lève le pied — je mérite un peu de souffler.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je maintiens exactement le même rythme qu'avant.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je prospecte moins, sans vraiment le décider consciemment.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "Je prospecte encore plus — le succès me donne de l'élan.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+    ]
+  },
+  {
+    text: "Il est 9h un lundi matin. Tu as prévu 2h de prospection téléphonique. Tu n'en as pas envie du tout. Que fais-tu ?",
+    answers: [
+      { text: "Je commence malgré tout — l'envie viendra en faisant.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je reporte à l'après-midi, voire à demain.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "Je commence 30 min plus tard, en mode moins intensif.", scores: { C:0, I:0, R:1, Res:1, Dis:1 } },
+      { text: "Je passe la matinée sur des tâches admin à la place.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Le marché immobilier est difficile depuis 3 mois. Beaucoup de conseillers autour de toi se plaignent. Ton état d'esprit ?",
+    answers: [
+      { text: "C'est vrai que c'est dur — j'attends que ça reparte.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Le marché n'existe pas — c'est toujours une question d'effort.", scores: { C:0, I:1, R:1, Res:2, Dis:2 } },
+      { text: "Je m'adapte : je cherche des niches moins touchées.", scores: { C:0, I:0, R:2, Res:2, Dis:1 } },
+      { text: "Ça me préoccupe mais je continue à prospecter normalement.", scores: { C:0, I:0, R:1, Res:1, Dis:2 } },
+    ]
+  },
+  {
+    text: "Tu n'as pas eu de nouveau mandat depuis 3 semaines. Comment tu gères ça ?",
+    answers: [
+      { text: "Je commence à douter de moi et de mon choix de métier.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je sais que c'est cyclique — ça va revenir.", scores: { C:0, I:2, R:0, Res:1, Dis:0 } },
+      { text: "J'analyse ce qui ne fonctionne pas et j'ajuste ma méthode.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "Je redouble de prospection pour compenser.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+    ]
+  },
+  {
+    text: "Tu as une semaine type définie. Un imprévu te fait rater ton créneau de prospection du mardi matin. Tu fais quoi ?",
+    answers: [
+      { text: "Je rattrape dans la journée ou le lendemain matin.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Tant pis pour cette semaine, je recommencerai la suivante.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je culpabilise mais ne rattrape pas forcément.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je n'avais pas vraiment de semaine type définie.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Un vendeur te répond agressivement au téléphone. Ton ressenti pour le reste de la journée ?",
+    answers: [
+      { text: "Ça me perturbe — j'ai du mal à rappeler les prospects suivants.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je m'énerve intérieurement mais ça ne change rien à mon rythme.", scores: { C:0, I:1, R:1, Res:2, Dis:1 } },
+      { text: "Ça glisse — les appels suivants, je suis déjà passé à autre chose.", scores: { C:0, I:1, R:1, Res:2, Dis:2 } },
+      { text: "Je m'en souviens le soir mais ça ne change pas mon travail.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+    ]
+  },
+  {
+    text: "Comment tu te prépares mentalement avant un rendez-vous d'estimation important ?",
+    answers: [
+      { text: "Je révise mon argumentaire et je visualise la réunion.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je fais confiance à mon expérience — pas besoin de préparer.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "J'ai souvent une appréhension difficile à gérer.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je relis rapidement les infos du bien et j'y vais.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
+    ]
+  },
+  {
+    text: "Tu compares ton mois aux autres conseillers du réseau. Tu es en dessous de la moyenne. Ta réaction ?",
+    answers: [
+      { text: "C'est démotivant — je me sens moins bon qu'eux.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Les comparaisons ne m'intéressent pas — je me compare à moi-même.", scores: { C:0, I:0, R:2, Res:2, Dis:1 } },
+      { text: "Ça me motive à faire mieux le mois prochain.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "Les autres ont peut-être eu de la chance ce mois-ci.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Tu dois te fixer un objectif de mandats pour les 60 prochains jours. Comment tu procèdes ?",
+    answers: [
+      { text: "Je fixe un chiffre précis basé sur mon rythme et mon BFR.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je vise ambitieux sans vraiment calculer si c'est atteignable.", scores: { C:0, I:2, R:0, Res:0, Dis:1 } },
+      { text: "Je préfère ne pas me fixer d'objectif pour ne pas être déçu.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je fixe un objectif raisonnable mais sans plan d'actions précis.", scores: { C:0, I:1, R:1, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Quelle phrase te ressemble le plus au quotidien ?",
+    answers: [
+      { text: "\"Je prospecte même quand tout va bien.\"", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "\"Je prospecte quand j'en ai besoin.\"", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "\"Je prospecte quand je me sens en forme.\"", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "\"J'aimerais prospecter plus mais je n'arrive pas à m'y tenir.\"", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Une formation ou une technique nouvelle est proposée par le réseau. Ton attitude ?",
+    answers: [
+      { text: "Je l'applique immédiatement et j'ajuste en marchant.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je la teste si j'en ai envie, sinon je garde mes habitudes.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "J'attends de voir si ça fonctionne pour les autres avant d'essayer.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je me forme mais j'ai du mal à changer mes habitudes.", scores: { C:1, I:0, R:0, Res:1, Dis:0 } },
+    ]
+  },
+  {
+    text: "Comment tu vis les périodes de vide dans ton pipeline ?",
+    answers: [
+      { text: "J'intensifie immédiatement ma prospection.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "Je me dis que ça va se remplir naturellement.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je panique et j'ai du mal à me concentrer.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je prospecte un peu plus mais sans plan structuré.", scores: { C:0, I:1, R:1, Res:0, Dis:1 } },
+    ]
+  },
+  {
+    text: "Le soir, comment tu évalues ta journée de travail ?",
+    answers: [
+      { text: "Je vérifie si j'ai fait ce que j'avais prévu et je prépare demain.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je me souviens vaguement de ce que j'ai fait.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "Je pense surtout à ce que je n'ai pas eu le temps de faire.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je n'ai pas vraiment de rituel du soir.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+    ]
+  },
+  {
+    text: "Dans 2 ans, comment tu te vois dans ce métier ?",
+    answers: [
+      { text: "Je vois clairement mon objectif de CA, mon mode de vie, mon équilibre.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je me vois bien mais sans plan précis pour y arriver.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "J'espère que ça se passera bien, mais j'ai des doutes.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "J'ai un objectif mais je sais que je devrai beaucoup travailler sur ma discipline.", scores: { C:0, I:0, R:1, Res:1, Dis:0 } },
+    ]
+  },
+];
+
+// ══════════════════════════════
+// PROFILS
+// ══════════════════════════════
+const PROFILS = {
+  Craintif: {
+    emoji: '🛡️',
+    color: '#ef4444',
+    desc: "Tu as tendance à te protéger davantage que tu n'avances. Les refus t'affectent plus longtemps que nécessaire, tu attends d'être certain avant d'agir, et le doute t'empêche parfois de passer à l'action. Ce n'est pas un manque de talent — c'est un pattern mental qui se travaille.",
+    recos: [
+      { titre: "La règle des 5 secondes", detail: "Avant chaque appel difficile, compte 5-4-3-2-1 et décroche. Ne laisse pas ton cerveau négocier. La peur disparaît en agissant, jamais en réfléchissant." },
+      { titre: "Journaliser tes victoires quotidiennes", detail: "Chaque soir, écris 3 choses concrètes que tu as faites malgré l'inconfort. Ton cerveau a besoin de preuves que tu es capable — donne-les lui." },
+      { titre: "Fixer des micro-objectifs hebdomadaires", detail: "Pas 10 mandats en 2 mois. 3 appels PAP aujourd'hui. La confiance se construit acte par acte, pas projet par projet." },
+    ]
+  },
+  Insouciant: {
+    emoji: '⚡',
+    color: '#f59e0b',
+    desc: "Tu as de l'élan, de l'énergie et de la confiance — c'est un vrai atout. Mais tu travailles trop souvent à l'instinct et tu relâches la pression après chaque succès. Ton pipeline souffre de tes creux de motivation. La discipline quotidienne est ton angle mort.",
+    recos: [
+      { titre: "Mettre en place une semaine type fixe", detail: "Décide une fois pour toutes tes créneaux de prospection — et traite-les comme des rendez-vous clients inamovibles. Ta liberté se construit dans la structure, pas contre elle." },
+      { titre: "Calculer ton BFR chaque trimestre", detail: "Ce chiffre doit te rappeler pourquoi tu prospectes même quand tout va bien. Affiche-le sur ton bureau. Quand tu veux lever le pied après un succès, regarde-le." },
+      { titre: "Créer un 'rituel anti-relâchement'", detail: "Le lendemain de chaque vente signée, tu doubles ton volume de prospection. Transforme le succès en accélérateur plutôt qu'en frein." },
+    ]
+  },
+  Realiste: {
+    emoji: '🏆',
+    color: '#22c55e',
+    desc: "Tu combines vision à long terme, capacité d'adaptation et discipline quotidienne. Tu prospectes même quand tu n'en as pas envie, tu analyses tes échecs sans t'y noyer, et tu sais exactement où tu vas. Tu es le profil le plus rare et le plus performant sur la durée.",
+    recos: [
+      { titre: "Viser le palier supérieur Efficity", detail: "Si tu n'es pas encore à 90% de rétrocession, c'est ton prochain objectif chiffré. Calcule exactement le CA qui manque et restructure ta semaine type pour l'atteindre." },
+      { titre: "Devenir un référent pour le groupe", detail: "Ton profil a une valeur pédagogique. Partage tes méthodes avec les conseillers plus junior — enseigner renforce encore plus que pratiquer." },
+      { titre: "Travailler ta zone de génie", detail: "Tu maîtrises la base. Identifie maintenant le levier à 80% de ton CA et concentre 80% de ton temps dessus. Moins d'actions, plus d'impact." },
+    ]
+  }
+};
+
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+let userName = '';
+let answers = [];
+let currentQ = 0;
+
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startQuiz() {
+  userName = document.getElementById('user-name').value.trim() || 'Toi';
+  answers = [];
+  currentQ = 0;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function restartQuiz() {
+  startQuiz();
+  showScreen('screen-intro');
+}
+
+// ══════════════════════════════
+// QUIZ
+// ══════════════════════════════
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const pct = Math.round((currentQ / QUESTIONS.length) * 100);
+
+  document.getElementById('q-label').textContent = `Question ${currentQ + 1} / ${QUESTIONS.length}`;
+  document.getElementById('q-pct').textContent = pct + '%';
+  document.getElementById('q-progress').style.width = pct + '%';
+
+  // Dots
+  let dotsHtml = '';
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const cls = i < currentQ ? 'done' : i === currentQ ? 'current' : '';
+    dotsHtml += `<div class="quiz-dot ${cls}"></div>`;
+  }
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const answersHtml = q.answers.map((a, i) => `
+    <button class="answer-btn" onclick="selectAnswer(${i})">
+      <div class="answer-letter">${letters[i]}</div>
+      <span>${a.text}</span>
+    </button>
+  `).join('');
+
+  document.getElementById('question-card').innerHTML = `
+    <div class="q-number">Question ${currentQ + 1} sur ${QUESTIONS.length}</div>
+    <div class="q-text">${q.text}</div>
+    ${q.context ? `<div class="q-context">${q.context}</div>` : ''}
+    <div class="answers">${answersHtml}</div>
+    <div class="quiz-nav">
+      <div class="quiz-dots">${dotsHtml}</div>
+      ${currentQ > 0 ? `<button class="btn btn-secondary" onclick="prevQuestion()">← Précédent</button>` : '<span></span>'}
+    </div>
+  `;
+}
+
+function selectAnswer(idx) {
+  // Visual feedback
+  document.querySelectorAll('.answer-btn').forEach((btn, i) => {
+    btn.classList.toggle('selected', i === idx);
+  });
+
+  answers[currentQ] = idx;
+
+  // Auto advance after short delay
+  setTimeout(() => {
+    if (currentQ < QUESTIONS.length - 1) {
+      currentQ++;
+      renderQuestion();
+    } else {
+      computeResults();
+    }
+  }, 380);
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+// ══════════════════════════════
+// COMPUTE
+// ══════════════════════════════
+function computeResults() {
+  // Tally scores
+  let C = 0, I = 0, R = 0, Res = 0, Dis = 0;
+  let ResMax = 0, DisMax = 0;
+
+  answers.forEach((ansIdx, qIdx) => {
+    const sc = QUESTIONS[qIdx].answers[ansIdx].scores;
+    C += sc.C; I += sc.I; R += sc.R;
+    Res += sc.Res; Dis += sc.Dis;
+  });
+
+  // Max possible per dimension
+  QUESTIONS.forEach(q => {
+    const maxRes = Math.max(...q.answers.map(a => a.scores.Res));
+    const maxDis = Math.max(...q.answers.map(a => a.scores.Dis));
+    ResMax += maxRes; DisMax += maxDis;
+  });
+
+  // Profil dominant
+  const total = C + I + R;
+  const pC = total > 0 ? Math.round((C / total) * 100) : 0;
+  const pI = total > 0 ? Math.round((I / total) * 100) : 0;
+  const pR = total > 0 ? Math.round((R / total) * 100) : 0;
+
+  let profil = 'Realiste';
+  if (C >= I && C >= R) profil = 'Craintif';
+  else if (I >= C && I >= R) profil = 'Insouciant';
+
+  const resPct = ResMax > 0 ? Math.round((Res / ResMax) * 100) : 0;
+  const disPct = DisMax > 0 ? Math.round((Dis / DisMax) * 100) : 0;
+
+  // Store for render
+  window._results = { profil, pC, pI, pR, resPct, disPct };
+
+  runReveal();
+}
+
+// ══════════════════════════════
+// REVEAL ANIMATION
+// ══════════════════════════════
+function runReveal() {
+  showScreen('screen-reveal');
+  const { profil, resPct, disPct } = window._results;
+  const p = PROFILS[profil];
+
+  document.getElementById('reveal-name').textContent = userName;
+  document.getElementById('reveal-profil').textContent = profil === 'Realiste' ? 'Le Réaliste' : profil === 'Craintif' ? 'Le Craintif' : "L'Insouciant";
+  document.getElementById('reveal-profil').style.color = p.color;
+  document.getElementById('reveal-emoji').textContent = p.emoji;
+
+  // Glow
+  const glow = document.getElementById('reveal-glow');
+  glow.style.background = `radial-gradient(circle, ${p.color}22 0%, transparent 70%)`;
+
+  // Sequence
+  setTimeout(() => {
+    glow.classList.add('visible');
+    document.getElementById('reveal-emoji').classList.add('visible');
+  }, 800);
+
+  setTimeout(() => {
+    document.getElementById('reveal-profil').classList.add('pop');
+  }, 1400);
+
+  // Scores
+  setTimeout(() => {
+    const scoresHtml = `
+      <div class="reveal-score-pill" id="rsp-res">
+        <span>💪 Résilience</span>
+        <strong style="color:var(--resilience)">${resPct}%</strong>
+      </div>
+      <div class="reveal-score-pill" id="rsp-dis">
+        <span>🎯 Discipline</span>
+        <strong style="color:var(--discipline)">${disPct}%</strong>
+      </div>
+    `;
+    document.getElementById('reveal-scores').innerHTML = scoresHtml;
+
+    setTimeout(() => document.getElementById('rsp-res').classList.add('pop'), 100);
+    setTimeout(() => document.getElementById('rsp-dis').classList.add('pop'), 400);
+  }, 2200);
+
+  setTimeout(() => {
+    document.getElementById('reveal-cta').classList.add('visible');
+  }, 3200);
+}
+
+// ══════════════════════════════
+// RESULTS
+// ══════════════════════════════
+function showResult() {
+  showScreen('screen-result');
+  const { profil, pC, pI, pR, resPct, disPct } = window._results;
+  const p = PROFILS[profil];
+  const profilLabel = profil === 'Realiste' ? 'Le Réaliste' : profil === 'Craintif' ? 'Le Craintif' : "L'Insouciant";
+
+  // Hero
+  document.getElementById('result-profil-hero').style.background = p.color + '18';
+  document.getElementById('result-profil-hero').style.borderLeft = `6px solid ${p.color}`;
+  document.getElementById('result-profil-hero').setAttribute('data-emoji', p.emoji);
+  document.getElementById('result-profil-hero').innerHTML = `
+    <div class="ph-label">Ton profil · ${userName}</div>
+    <div class="ph-name" style="color:${p.color}">${profilLabel} ${p.emoji}</div>
+    <div class="ph-desc">${p.desc}</div>
+  `;
+
+  // Score profil
+  document.getElementById('sc-profil').innerHTML = `
+    <div class="score-header">
+      <div class="score-name" style="color:${p.color}">${profilLabel}</div>
+      <div class="score-val" style="color:${p.color}">${Math.max(pC, pI, pR)}%</div>
+    </div>
+    <div class="score-bar-bg">
+      <div class="score-bar-fill" id="bar-profil" style="background:${p.color}"></div>
+    </div>
+    <div class="score-desc">
+      Craintif ${pC}% · Insouciant ${pI}% · Réaliste ${pR}%
+    </div>
+  `;
+
+  // Score résilience
+  const resLabel = resPct >= 70 ? 'Excellente' : resPct >= 45 ? 'Moyenne' : 'À renforcer';
+  document.getElementById('sc-resilience').innerHTML = `
+    <div class="score-header">
+      <div class="score-name" style="color:var(--resilience)">💪 Résilience</div>
+      <div class="score-val" style="color:var(--resilience)">${resPct}%</div>
+    </div>
+    <div class="score-bar-bg">
+      <div class="score-bar-fill" id="bar-res" style="background:var(--resilience)"></div>
+    </div>
+    <div class="score-desc">${resLabel} — ta capacité à rebondir après un refus ou un échec.</div>
+  `;
+
+  // Score discipline
+  const disLabel = disPct >= 70 ? 'Excellente' : disPct >= 45 ? 'Moyenne' : 'À renforcer';
+  document.getElementById('sc-discipline').innerHTML = `
+    <div class="score-header">
+      <div class="score-name" style="color:var(--discipline)">🎯 Discipline</div>
+      <div class="score-val" style="color:var(--discipline)">${disPct}%</div>
+    </div>
+    <div class="score-bar-bg">
+      <div class="score-bar-fill" id="bar-dis" style="background:var(--discipline)"></div>
+    </div>
+    <div class="score-desc">${disLabel} — ta capacité à prospecter même sans envie ni pression externe.</div>
+  `;
+
+  // Comparatif
+  const profilsOrder = ['Craintif', 'Insouciant', 'Realiste'];
+  document.getElementById('comp-row').innerHTML = profilsOrder.map(pk => {
+    const pp = PROFILS[pk];
+    const isCurrent = pk === profil;
+    const pLabel = pk === 'Realiste' ? 'Le Réaliste' : pk === 'Craintif' ? 'Le Craintif' : "L'Insouciant";
+    const pctVal = pk === 'Craintif' ? pC : pk === 'Insouciant' ? pI : pR;
+    return `
+      <div class="comp-profil ${isCurrent ? 'current' : ''}">
+        <div class="cp-emoji">${pp.emoji}</div>
+        <div class="cp-name" style="color:${pp.color}">${pLabel}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:${pp.color};margin:6px 0;">${pctVal}%</div>
+        <div class="cp-desc">${pk === 'Craintif' ? 'Pessimiste, se protège, hésite à passer à l\'action.' : pk === 'Insouciant' ? 'Confiant mais irrégulier, manque de structure.' : 'Vision long terme, discipline, s\'adapte.'}</div>
+        ${isCurrent ? `<div style="font-size:10px;font-weight:700;color:var(--yellow);letter-spacing:1px;margin-top:8px;text-transform:uppercase;">◀ TON PROFIL</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  // Recommandations
+  document.getElementById('recos-container').innerHTML = p.recos.map((r, i) => `
+    <div class="reco-card">
+      <div class="reco-num">${i + 1}</div>
+      <div class="reco-content">
+        <strong>${r.titre}</strong>
+        <span>${r.detail}</span>
+      </div>
+    </div>
+  `).join('');
+
+  // Animate bars after render
+  setTimeout(() => {
+    const barProfil = document.getElementById('bar-profil');
+    const barRes = document.getElementById('bar-res');
+    const barDis = document.getElementById('bar-dis');
+    if (barProfil) barProfil.style.width = Math.max(pC, pI, pR) + '%';
+    if (barRes) barRes.style.width = resPct + '%';
+    if (barDis) barDis.style.width = disPct + '%';
+  }, 200);
+}
+
+// ══════════════════════════════
+// EXPORT
+// ══════════════════════════════
+async function exportPNG() {
+  const el = document.getElementById('screen-result');
+  const name = userName || 'diagnostic-mindset';
+  try {
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#111111',
+      scale: 1.5,
+      useCORS: true,
+      logging: false,
+      windowWidth: 800,
+    });
+    const link = document.createElement('a');
+    link.download = `${name.replace(/\s+/g,'-')}-mindset-levelup.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('Export indisponible dans cet aperçu. Utilisez le bouton Imprimer.');
+  }
+}
+</script>
+</body>
+</html>
