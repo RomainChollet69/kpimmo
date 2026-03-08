@@ -130,12 +130,12 @@
 
   /* ── CARD ── */
   .card {
-    background: #e2e2e2;
-    border: 1px solid #cacaca;
+    background: var(--dark);
+    border: 1px solid var(--gray);
     padding: 32px 28px;
     cursor: pointer;
     text-decoration: none;
-    color: var(--black);
+    color: inherit;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -155,7 +155,7 @@
   }
   .card:hover {
     border-color: var(--card-accent, var(--yellow));
-    background: #ececec;
+    background: #1f1f1f;
     transform: translateY(-3px);
   }
   .card:hover::before { transform: scaleX(1); }
@@ -190,11 +190,11 @@
     font-size: 24px;
     line-height: 1.1;
     letter-spacing: .5px;
-    color: var(--black);
+    color: var(--white);
   }
 
   .card-desc {
-    color: #555;
+    color: var(--gray-light);
     font-size: 14px;
     line-height: 1.6;
     flex: 1;
