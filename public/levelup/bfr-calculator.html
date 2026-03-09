@@ -604,6 +604,55 @@
   .extra-fields { display: none; }
   .extra-fields.open { display: block; }
 
+  /* ── MINIMUM VITAL BANNER ── */
+  .vital-banner {
+    background: var(--dark2);
+    border: 1px solid var(--gray);
+    border-left: 4px solid var(--green);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .vital-banner .vb-label {
+    font-size: 13px;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+  }
+  .vital-banner .vb-amount {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--green);
+  }
+  .vital-banner .vb-hint {
+    font-size: 12px;
+    color: var(--gray-light);
+    width: 100%;
+  }
+
+  /* ── PROJET DE VIE ── */
+  .projet-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .projet-row:last-child { border-bottom: none; }
+  select.projet-type {
+    width: auto;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
   @media print {
     header, .progress-bar, .btn-row, .print-btn, .reset-btn, footer, .btn-info { display: none !important; }
     body { background: white; color: black; }
@@ -741,24 +790,80 @@
       </div>
     </div>
 
+    <!-- Minimum vital live -->
+    <div class="vital-banner" id="vital-banner-1">
+      <div>
+        <div class="vb-label">📊 Ton minimum vital calculé</div>
+        <div class="vb-hint">Total de tes charges perso + pro saisies ci-dessus</div>
+      </div>
+      <div class="vb-amount" id="min-vital-display">— €</div>
+    </div>
+
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="goToStep(2)">Étape suivante →</button>
+      <button class="btn btn-primary" onclick="goToStep(2)">Définir mon BFR →</button>
     </div>
   </div>
 
-  <!-- ══ STEP 2 : OBJECTIFS ══ -->
+  <!-- ══ STEP 2 : BFR ══ -->
   <div class="section" id="step-2">
-    <div class="section-title">Mon <span>objectif de vie</span></div>
-    <div class="section-subtitle">Ce que tu veux vous mettre dans ta poche chaque mois, net de tout.</div>
+    <div class="section-title">Mon <span>BFR</span></div>
+    <div class="section-subtitle">Le BFR (Besoin en Fonds de Roulement), c'est le revenu net que tu dois te verser chaque mois pour vivre et atteindre tes objectifs. C'est ton point de départ.</div>
+
+    <!-- Rappel minimum vital -->
+    <div class="vital-banner">
+      <div>
+        <div class="vb-label">⚠️ Ton minimum vital (charges)</div>
+        <div class="vb-hint">En dessous de ce seuil, tu ne couvres pas tes dépenses du mois</div>
+      </div>
+      <div class="vb-amount" id="min-vital-step2">— €</div>
+    </div>
 
     <div class="field-group">
-      <div class="field-group-title"><span class="icon">🎯</span> Revenu net souhaité</div>
+      <div class="field-group-title"><span class="icon">🎯</span> Mon BFR mensuel</div>
       <div class="field-row">
         <div>
-          <div class="field-label">Revenu net mensuel souhaité</div>
-          <div class="field-hint">Ce que tu touches après cotisations, avant impôt sur le revenu</div>
+          <div class="field-label">Mon BFR — revenu net mensuel cible</div>
+          <div class="field-hint">Ce que tu veux mettre dans ta poche chaque mois, net de cotisations. Commence au minimum par ton minimum vital.</div>
         </div>
         <div class="input-wrap"><input type="number" id="revenu_net" value="2500" min="0" class="highlight"><span class="currency">€</span></div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">✨</span> Mon projet de vie <span style="font-size:12px;font-weight:400;color:var(--gray-light);margin-left:8px;">(optionnel)</span></div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Type de projet</div>
+          <div class="field-hint">Ce montant s'ajoutera automatiquement à ton BFR</div>
+        </div>
+        <div>
+          <select id="projet_type" onchange="updateProjet()">
+            <option value="none">Aucun projet pour l'instant</option>
+            <option value="epargne">Épargne mensuelle</option>
+            <option value="voyage">Voyage (montant total)</option>
+            <option value="achat">Achat / projet ponctuel</option>
+          </select>
+        </div>
+      </div>
+      <div id="projet-fields" style="display:none;">
+        <div class="field-row">
+          <div>
+            <div class="field-label" id="projet-label">Montant</div>
+            <div class="field-hint" id="projet-hint"></div>
+          </div>
+          <div class="input-wrap"><input type="number" id="projet_montant" value="0" min="0" oninput="updateProjet()"><span class="currency">€</span></div>
+        </div>
+        <div class="field-row" id="projet-horizon-row" style="display:none;">
+          <div>
+            <div class="field-label">Horizon (mois)</div>
+            <div class="field-hint">Sur combien de mois tu veux atteindre cet objectif ?</div>
+          </div>
+          <div class="input-wrap"><input type="number" id="projet_horizon" value="12" min="1" oninput="updateProjet()"><span class="currency">mois</span></div>
+        </div>
+        <div class="field-row" style="border:none;padding-top:12px;">
+          <div><div class="field-label" style="color:var(--green);">→ Ajout mensuel au BFR</div></div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--green);" id="projet-ajout">+ 0 €</div>
+        </div>
       </div>
     </div>
 
@@ -767,7 +872,7 @@
       <div class="field-row">
         <div>
           <div class="field-label">Taux de cotisations sociales</div>
-          <div class="field-hint">Auto-entrepreneur : 22 % sur le chiffre d'affaires rétrocédé</div>
+          <div class="field-hint">Auto-entrepreneur : 22 % sur la rétrocession brute perçue</div>
         </div>
         <div>
           <select id="taux_cotis">
@@ -824,19 +929,20 @@
 
     <!-- BFR HERO -->
     <div class="results-hero">
-      <div class="label">Mon Besoin en Fonds de Roulement mensuel</div>
+      <div class="label">Mon BFR — Revenu net mensuel cible</div>
       <div class="amount" id="res-bfr-mois">— €</div>
-      <div class="sublabel">soit <strong id="res-bfr-an">—</strong> par an</div>
+      <div class="sublabel">soit <strong id="res-bfr-an">—</strong> par an · <span id="res-bfr-projet"></span></div>
     </div>
 
     <!-- DECOMPO -->
     <div class="decompo">
-      <h4>Décomposition du BFR</h4>
-      <div class="decompo-line"><span>Charges fixes personnelles</span><span class="dval" id="dec-perso">—</span></div>
-      <div class="decompo-line"><span>Charges professionnelles</span><span class="dval" id="dec-pro">—</span></div>
-      <div class="decompo-line"><span>Revenu net souhaité</span><span class="dval" id="dec-revenu">—</span></div>
-      <div class="decompo-line"><span>Cotisations sociales (sur rétrocession)</span><span class="dval" id="dec-cotis">—</span></div>
-      <div class="decompo-line total"><span>= BFR mensuel total</span><span class="dval" id="dec-total">—</span></div>
+      <h4>Du BFR au CA — Comment ça se calcule</h4>
+      <div class="decompo-line"><span>Mon BFR (revenu net mensuel cible)</span><span class="dval" id="dec-revenu">—</span></div>
+      <div class="decompo-line"><span>+ Cotisations sociales (sur rétrocession)</span><span class="dval" id="dec-cotis">—</span></div>
+      <div class="decompo-line total"><span>= Rétrocession brute mensuelle nécessaire</span><span class="dval" id="dec-total">—</span></div>
+      <div class="decompo-line" style="margin-top:12px;padding-top:8px;font-size:12px;color:var(--gray-light);border-top:1px dashed var(--gray);">
+        <span>Pour mémoire — tes charges mensuelles (perso + pro)</span><span class="dval" id="dec-charges">—</span>
+      </div>
     </div>
 
     <!-- GRID CA + MANDATS -->
@@ -913,6 +1019,17 @@
 
   function goToStep(n) {
     if (n > currentStep + 1) return; // prevent skipping
+
+    // Quand on passe à l'étape 2, pré-remplir le BFR avec le minimum vital si nécessaire
+    if (n === 2) {
+      updateMinVital();
+      const { total } = getChargesTotal();
+      const currentBfr = val('revenu_net');
+      if (currentBfr < total && total > 0) {
+        document.getElementById('revenu_net').value = Math.ceil(total / 50) * 50;
+      }
+    }
+
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById('step-' + n).classList.add('active');
 
@@ -930,6 +1047,18 @@
     currentStep = n;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Listeners pour le minimum vital live
+  document.addEventListener('DOMContentLoaded', () => {
+    const chargeIds = ['loyer','alim','sante','assur','abos','transport','credits','famille',
+      'loisirs','epargne','pack_efficity','pack_estim','carbu_pro','outils','marketing',
+      'repas','formation','comptable'];
+    chargeIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateMinVital);
+    });
+    updateMinVital();
+  });
 
   function toggleExtra(id) {
     const el = document.getElementById(id);
@@ -991,43 +1120,81 @@
     return PALIERS[0];
   }
 
-  function calculate() {
-    // ── CHARGES ──
+  // ── MINIMUM VITAL ──
+  function getChargesTotal() {
     const chargesPerso = val('loyer') + val('alim') + val('sante') + val('assur') +
       val('abos') + val('transport') + val('credits') + val('famille') + val('loisirs') + val('epargne');
     const chargesPro = val('pack_efficity') + val('pack_estim') + val('carbu_pro') +
       val('outils') + val('marketing') + val('repas') + val('formation') + val('comptable');
+    return { chargesPerso, chargesPro, total: chargesPerso + chargesPro };
+  }
 
-    // ── PARAMS ──
-    const revenuNet   = val('revenu_net');
-    const tauxCotis   = val('taux_cotis') / 100;
+  function updateMinVital() {
+    const { total } = getChargesTotal();
+    document.getElementById('min-vital-display').textContent = fmt(total);
+    document.getElementById('min-vital-step2').textContent   = fmt(total);
+  }
+
+  // ── PROJET DE VIE ──
+  function updateProjet() {
+    const type = document.getElementById('projet_type').value;
+    const fields = document.getElementById('projet-fields');
+    const horizonRow = document.getElementById('projet-horizon-row');
+    const label = document.getElementById('projet-label');
+    const hint  = document.getElementById('projet-hint');
+
+    if (type === 'none') {
+      fields.style.display = 'none';
+      document.getElementById('projet-ajout').textContent = '+ 0 €';
+      return;
+    }
+    fields.style.display = 'block';
+
+    if (type === 'epargne') {
+      label.textContent = 'Épargne mensuelle souhaitée';
+      hint.textContent  = 'Ce montant sera ajouté directement à ton BFR chaque mois.';
+      horizonRow.style.display = 'none';
+      const m = val('projet_montant');
+      document.getElementById('projet-ajout').textContent = '+ ' + fmt(m);
+    } else {
+      label.textContent = type === 'voyage' ? 'Montant total du voyage' : 'Montant total du projet';
+      hint.textContent  = 'Sur combien de mois veux-tu atteindre cet objectif ?';
+      horizonRow.style.display = 'grid';
+      const montant  = val('projet_montant');
+      const horizon  = val('projet_horizon') || 12;
+      const mensuel  = montant / horizon;
+      document.getElementById('projet-ajout').textContent = '+ ' + fmt(mensuel) + ' / mois';
+    }
+  }
+
+  function getProjetMensuel() {
+    const type = document.getElementById('projet_type').value;
+    if (type === 'none') return 0;
+    if (type === 'epargne') return val('projet_montant');
+    const montant = val('projet_montant');
+    const horizon = val('projet_horizon') || 12;
+    return montant / horizon;
+  }
+
+  function calculate() {
+    // ── BFR = revenu net cible (ce que l'agent veut mettre dans sa poche) ──
+    const bfr       = val('revenu_net') + getProjetMensuel();
+    const bfrAn     = bfr * 12;
+    const tauxCotis = val('taux_cotis') / 100;
     const commissionMoy = val('commission_moy');
 
-    // ── REVENU BRUT AVANT COTISATIONS ──
-    // Les cotisations auto-entrepreneur sont calculées sur la rétrocession brute perçue.
-    // revenuBrut = revenuNet / (1 - tauxCotis)
-    const revenuBrut = tauxCotis < 1 ? revenuNet / (1 - tauxCotis) : revenuNet;
-    const cotisations = revenuBrut - revenuNet;
+    // Pour passer du BFR (net) à la rétrocession brute nécessaire :
+    // retroBrute × (1 - tauxCotis) = BFR  →  retroBrute = BFR / (1 - tauxCotis)
+    const retroBruteMois = tauxCotis < 1 ? bfr / (1 - tauxCotis) : bfr;
+    const cotisationsMois = retroBruteMois - bfr;
 
-    // ── BFR MENSUEL ──
-    // BFR = charges perso + charges pro + revenu net + cotisations
-    const bfrMois = chargesPerso + chargesPro + revenuNet + cotisations;
-    const bfrAn   = bfrMois * 12;
-
-    // ── CA ANNUEL NÉCESSAIRE (calcul progressif par paliers) ──
-    // On cherche le CA annuel tel que :
-    //   retroProgressive(caAn) × (1 - tauxCotis) = revenuBrut × 12 + chargesPro × 12
-    // Soit rétrocession brute annuelle nécessaire :
-    //   retroCibleAn = (revenuBrut + chargesPerso + chargesPro) × 12
-    // (charges perso et pro sont payées depuis la rétrocession nette)
-    // Plus précisément : retroBrute × (1 - tauxCotis) doit couvrir : revenuNet + chargesPerso + chargesPro (mensuels × 12)
-    // → retroBruteCible = (revenuNet + chargesPerso + chargesPro) / (1 - tauxCotis) × 12
-    const retroBruteCibleAn = tauxCotis < 1
-      ? (revenuNet + chargesPerso + chargesPro) / (1 - tauxCotis) * 12
-      : (revenuNet + chargesPerso + chargesPro) * 12;
-
+    // CA annuel nécessaire : on cherche caAn tel que retroProgressive(caAn) = retroBruteMois × 12
+    const retroBruteCibleAn = retroBruteMois * 12;
     const caAn   = caNecessaire(retroBruteCibleAn);
     const caMois = caAn / 12;
+
+    // Charges pour info (ne font pas partie du BFR, juste affichées en mémoire)
+    const { total: chargesTotal } = getChargesTotal();
 
     // ── RÉTROCESSION RÉELLE & TAUX MOYEN ──
     const retroAn      = retroProgressive(caAn);
@@ -1035,23 +1202,23 @@
     const palier       = palierAtteint(caAn);
 
     // ── PAR VENTE ──
-    // Commission moyenne × taux moyen effectif = rétrocession brute par vente
-    // Attention : en réalité chaque vente se place dans la tranche courante,
-    // mais pour simplifier on utilise le taux moyen annuel comme approximation.
     const retroBruteParVente = commissionMoy * tauxMoyEff;
     const netParVente        = retroBruteParVente * (1 - tauxCotis);
     const mandatsAn          = commissionMoy > 0 ? caAn / commissionMoy : 0;
     const mandatsMois        = mandatsAn / 12;
 
     // ── AFFICHAGE BFR ──
-    document.getElementById('res-bfr-mois').textContent = fmt(bfrMois);
+    document.getElementById('res-bfr-mois').textContent = fmt(bfr);
     document.getElementById('res-bfr-an').textContent   = fmt(bfrAn) + ' / an';
+    const projetMens = getProjetMensuel();
+    const projetType = document.getElementById('projet_type').value;
+    document.getElementById('res-bfr-projet').textContent =
+      projetMens > 0 ? 'dont ' + fmt(projetMens) + '/mois pour ton projet de vie' : '';
 
-    document.getElementById('dec-perso').textContent   = fmt(chargesPerso);
-    document.getElementById('dec-pro').textContent     = fmt(chargesPro);
-    document.getElementById('dec-revenu').textContent  = fmt(revenuNet);
-    document.getElementById('dec-cotis').textContent   = fmt(cotisations);
-    document.getElementById('dec-total').textContent   = fmt(bfrMois);
+    document.getElementById('dec-revenu').textContent  = fmt(bfr);
+    document.getElementById('dec-cotis').textContent   = fmt(cotisationsMois);
+    document.getElementById('dec-total').textContent   = fmt(retroBruteMois);
+    document.getElementById('dec-charges').textContent = fmt(chargesTotal);
 
     // ── AFFICHAGE CA ──
     document.getElementById('res-ca-mois').textContent  = fmt(caMois);
@@ -1126,11 +1293,15 @@
         credits: 0, famille: 0, loisirs: 0, epargne: 0,
         pack_efficity: 105, pack_estim: 84, carbu_pro: 150, outils: 50, marketing: 80,
         repas: 0, formation: 13, comptable: 0,
-        revenu_net: 2500, commission_moy: 5500
+        revenu_net: 2500, commission_moy: 5500,
+        projet_montant: 0, projet_horizon: 12
       };
       if (defaults[i.id] !== undefined) i.value = defaults[i.id];
     });
     document.getElementById('taux_cotis').value = '22';
+    document.getElementById('projet_type').value = 'none';
+    updateProjet();
+    updateMinVital();
   }
 </script>
 </body>
