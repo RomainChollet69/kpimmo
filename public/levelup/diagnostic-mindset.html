@@ -742,139 +742,142 @@ body {
 // ══════════════════════════════
 const QUESTIONS = [
   {
-    text: "Un prospect te dit 'non' après un entretien que tu pensais réussi. Ta réaction dans les 30 minutes qui suivent ?",
-    context: "Sois honnête — pas ce que tu devrais faire, ce que tu fais vraiment.",
+    text: "Un prospect te dit 'non' après un entretien que tu pensais réussi. Comment tu vis la suite de ta journée ?",
+    context: "Pas ce que tu devrais faire — ce qui se passe vraiment.",
     answers: [
-      { text: "Je remets en question ma technique et j'hésite à rappeler les suivants.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Ça m'énerve, mais je passe à l'appel suivant sans trop y penser.", scores: { C:0, I:2, R:0, Res:1, Dis:1 } },
-      { text: "Je note ce qui n'a pas fonctionné, puis je reprends ma liste.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
-      { text: "Je fais une pause, parfois longue, avant de me remettre au travail.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Ça me trotte dans la tête. Je repasse l'entretien en boucle, je cherche ce que j'aurais pu dire autrement.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Pas grave, ça fait partie du jeu. Un non de plus, un non de moins — j'enchaîne.", scores: { C:0, I:2, R:0, Res:1, Dis:1 } },
+      { text: "Je prends 5 minutes pour noter ce qui a coincé, puis je reprends mes appels — même si le cœur n'y est pas.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Ça dépend des jours. Parfois ça glisse, parfois ça me plombe l'après-midi.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
     ]
   },
   {
-    text: "Tu viens de signer ta meilleure vente du trimestre. Que se passe-t-il dans ta prospection la semaine suivante ?",
+    text: "Tu viens de signer ta meilleure vente du trimestre. La semaine d'après, ta prospection...",
     answers: [
-      { text: "Je lève le pied — je mérite un peu de souffler.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "Je maintiens exactement le même rythme qu'avant.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je prospecte moins, sans vraiment le décider consciemment.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
-      { text: "Je prospecte encore plus — le succès me donne de l'élan.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "Je m'accorde du relâchement — je l'ai mérité, j'ai besoin de souffler.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je prospecte moins sans vraiment le décider — je m'en rends compte après coup.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "Je surfe sur la confiance pour appeler des contacts que je repoussais.", scores: { C:0, I:1, R:1, Res:2, Dis:1 } },
+      { text: "Je m'oblige à garder exactement le même rythme. Pas question de lâcher.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
   {
-    text: "Il est 9h un lundi matin. Tu as prévu 2h de prospection téléphonique. Tu n'en as pas envie du tout. Que fais-tu ?",
+    text: "Lundi 9h, tu as prévu 2h de prospection téléphonique. Tu n'en as aucune envie.",
+    context: "Sois honnête — qu'est-ce qui se passe vraiment ce lundi matin ?",
     answers: [
-      { text: "Je commence malgré tout — l'envie viendra en faisant.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je reporte à l'après-midi, voire à demain.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
-      { text: "Je commence 30 min plus tard, en mode moins intensif.", scores: { C:0, I:0, R:1, Res:1, Dis:1 } },
-      { text: "Je passe la matinée sur des tâches admin à la place.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je fais de l'administratif d'abord, en attendant que la motivation revienne.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je décale à l'après-midi. Forcer quand on n'est pas dedans, c'est contre-productif.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je fais une version allégée — 1h au lieu de 2, en mode cool.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
+      { text: "Je m'y colle quand même. C'est pas agréable mais c'est le deal que j'ai passé avec moi-même.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
   {
-    text: "Le marché immobilier est difficile depuis 3 mois. Beaucoup de conseillers autour de toi se plaignent. Ton état d'esprit ?",
+    text: "Le marché immobilier est difficile depuis 3 mois. Beaucoup de conseillers se plaignent.",
     answers: [
-      { text: "C'est vrai que c'est dur — j'attends que ça reparte.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Le marché n'existe pas — c'est toujours une question d'effort.", scores: { C:0, I:1, R:1, Res:2, Dis:2 } },
-      { text: "Je m'adapte : je cherche des niches moins touchées.", scores: { C:0, I:0, R:2, Res:2, Dis:1 } },
-      { text: "Ça me préoccupe mais je continue à prospecter normalement.", scores: { C:0, I:0, R:1, Res:1, Dis:2 } },
+      { text: "C'est vrai que c'est dur. Je fais ce que je peux mais j'avoue que ça me pèse.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Le marché c'est des excuses — les bons conseillers s'en sortent toujours.", scores: { C:0, I:2, R:0, Res:1, Dis:0 } },
+      { text: "Je continue comme avant — pas la peine de tout chambouler à chaque fluctuation.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
+      { text: "J'ai changé ma stratégie : nouveaux secteurs, nouveaux canaux, rythme intensifié.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
     ]
   },
   {
-    text: "Tu n'as pas eu de nouveau mandat depuis 3 semaines. Comment tu gères ça ?",
+    text: "Tu n'as pas rentré de nouveau mandat depuis 3 semaines. Comment tu gères ça ?",
     answers: [
-      { text: "Je commence à douter de moi et de mon choix de métier.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je sais que c'est cyclique — ça va revenir.", scores: { C:0, I:2, R:0, Res:1, Dis:0 } },
-      { text: "J'analyse ce qui ne fonctionne pas et j'ajuste ma méthode.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
-      { text: "Je redouble de prospection pour compenser.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "J'ai décortiqué mes chiffres : appels, rendez-vous, taux de transformation. J'ai identifié où ça bloque.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "C'est cyclique, ça va revenir. Pas de raison de paniquer.", scores: { C:0, I:2, R:0, Res:1, Dis:0 } },
+      { text: "Ça me stresse. Je commence à douter de ma méthode.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "J'essaie de prospecter un peu plus, sans trop savoir quoi changer.", scores: { C:1, I:1, R:0, Res:0, Dis:1 } },
     ]
   },
   {
-    text: "Tu as une semaine type définie. Un imprévu te fait rater ton créneau de prospection du mardi matin. Tu fais quoi ?",
+    text: "Un ami te propose un week-end en dernière minute. Tu avais prévu de faire de la pige samedi matin.",
+    context: "Il n'y a pas de bonne réponse — c'est une question d'équilibre personnel.",
     answers: [
-      { text: "Je rattrape dans la journée ou le lendemain matin.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Tant pis pour cette semaine, je recommencerai la suivante.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "Je culpabilise mais ne rattrape pas forcément.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je n'avais pas vraiment de semaine type définie.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "J'y vais sans hésiter — la vie c'est pas que le boulot !", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "J'y vais, mais je culpabilise de ne pas avoir pigé.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "J'y vais et je décale ma pige au dimanche soir ou lundi matin.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
+      { text: "Je décline. Mon créneau de pige, c'est sacré.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
   {
     text: "Un vendeur te répond agressivement au téléphone. Ton ressenti pour le reste de la journée ?",
     answers: [
-      { text: "Ça me perturbe — j'ai du mal à rappeler les prospects suivants.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je m'énerve intérieurement mais ça ne change rien à mon rythme.", scores: { C:0, I:1, R:1, Res:2, Dis:1 } },
-      { text: "Ça glisse — les appels suivants, je suis déjà passé à autre chose.", scores: { C:0, I:1, R:1, Res:2, Dis:2 } },
-      { text: "Je m'en souviens le soir mais ça ne change pas mon travail.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Ça me touche. J'ai besoin d'une pause avant de reprendre les appels.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Ça m'énerve sur le coup mais 5 minutes après c'est oublié. Next !", scores: { C:0, I:2, R:0, Res:1, Dis:1 } },
+      { text: "Ça dépend — si c'est le troisième de la journée, j'arrête les appels.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "Je note mentalement ce qui a pu déclencher la réaction, et j'enchaîne.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
   {
-    text: "Comment tu te prépares mentalement avant un rendez-vous d'estimation important ?",
+    text: "Comment tu te prépares avant un rendez-vous d'estimation important ?",
     answers: [
-      { text: "Je révise mon argumentaire et je visualise la réunion.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je fais confiance à mon expérience — pas besoin de préparer.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "J'ai souvent une appréhension difficile à gérer.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je relis rapidement les infos du bien et j'y vais.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
+      { text: "Je fais une préparation correcte, sans plus. L'expérience fait le reste.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
+      { text: "Je relis les infos du bien en arrivant — l'essentiel c'est d'être naturel face au vendeur.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je prépare beaucoup, parfois trop. J'ai peur d'être pris au dépourvu par une question.", scores: { C:2, I:0, R:0, Res:0, Dis:1 } },
+      { text: "Je prépare un dossier complet : comparables, historique du quartier, argumentaire structuré.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
   {
-    text: "Tu compares ton mois aux autres conseillers du réseau. Tu es en dessous de la moyenne. Ta réaction ?",
+    text: "Tu compares tes résultats à ceux des autres conseillers du réseau. Tu es en dessous de la moyenne.",
     answers: [
-      { text: "C'est démotivant — je me sens moins bon qu'eux.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Les comparaisons ne m'intéressent pas — je me compare à moi-même.", scores: { C:0, I:0, R:2, Res:2, Dis:1 } },
-      { text: "Ça me motive à faire mieux le mois prochain.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
-      { text: "Les autres ont peut-être eu de la chance ce mois-ci.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "C'est dur. Je me demande ce qu'ils ont de plus que moi.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Les classements ne veulent rien dire — chaque secteur est différent.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je contacte les meilleurs pour comprendre leurs méthodes, quitte à changer ma façon de faire.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
+      { text: "Ça me motive à bosser plus, mais sans changer fondamentalement ma méthode.", scores: { C:0, I:1, R:1, Res:1, Dis:1 } },
     ]
   },
   {
-    text: "Tu dois te fixer un objectif de mandats pour les 60 prochains jours. Comment tu procèdes ?",
+    text: "Tu dois te fixer un objectif de ventes pour les 60 prochains jours. Comment tu procèdes ?",
     answers: [
-      { text: "Je fixe un chiffre précis basé sur mon rythme et mon BFR.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je vise ambitieux sans vraiment calculer si c'est atteignable.", scores: { C:0, I:2, R:0, Res:0, Dis:1 } },
-      { text: "Je préfère ne pas me fixer d'objectif pour ne pas être déçu.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je fixe un objectif raisonnable mais sans plan d'actions précis.", scores: { C:0, I:1, R:1, Res:0, Dis:0 } },
+      { text: "Je vise ambitieux. Viser haut, c'est ce qui me tire vers le haut.", scores: { C:0, I:2, R:0, Res:1, Dis:1 } },
+      { text: "Les objectifs chiffrés me stressent plus qu'ils ne m'aident. Je préfère y aller au feeling.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je me fixe un objectif raisonnable, mais sans plan d'actions détaillé pour y arriver.", scores: { C:0, I:1, R:1, Res:0, Dis:0 } },
+      { text: "Je calcule précisément : BFR, nombre de ventes nécessaires, nombre d'appels par jour.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
   {
     text: "Quelle phrase te ressemble le plus au quotidien ?",
     answers: [
-      { text: "\"Je prospecte même quand tout va bien.\"", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "\"Je prospecte quand j'en ai besoin.\"", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "\"Je prospecte quand je me sens en forme.\"", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
-      { text: "\"J'aimerais prospecter plus mais je n'arrive pas à m'y tenir.\"", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "\"Je sais que je devrais prospecter plus régulièrement, mais j'ai du mal à m'y tenir.\"", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "\"Je prospecte tous les jours, c'est non négociable — même quand j'ai des mandats en cours.\"", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "\"Je prospecte par vagues — quand je suis en forme, j'y vais à fond.\"", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "\"Je prospecte quand mon pipeline est vide — le reste du temps j'ai d'autres priorités.\"", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
     ]
   },
   {
-    text: "Une formation ou une technique nouvelle est proposée par le réseau. Ton attitude ?",
+    text: "Après une journée de formation comme aujourd'hui, que se passe-t-il concrètement la semaine suivante ?",
+    context: "Sois honnête sur ce qui se passe vraiment, pas sur ce que tu aimerais qu'il se passe.",
     answers: [
-      { text: "Je l'applique immédiatement et j'ajuste en marchant.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je la teste si j'en ai envie, sinon je garde mes habitudes.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "J'attends de voir si ça fonctionne pour les autres avant d'essayer.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je me forme mais j'ai du mal à changer mes habitudes.", scores: { C:1, I:0, R:0, Res:1, Dis:0 } },
+      { text: "La formation m'a motivé, mais honnêtement je reprends mes habitudes au bout de quelques jours.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
+      { text: "J'ai envie d'appliquer mais j'ai peur de ne pas y arriver, alors je ne m'engage pas trop.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je planifie exactement quoi appliquer, quand et comment — avec des rappels dans mon agenda.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Je retiens ce qui m'a parlé et je l'intègre naturellement, sans plan précis.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
     ]
   },
   {
-    text: "Comment tu vis les périodes de vide dans ton pipeline ?",
+    text: "Comment tu vis les périodes creuses dans ton pipeline ?",
     answers: [
-      { text: "J'intensifie immédiatement ma prospection.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
-      { text: "Je me dis que ça va se remplir naturellement.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "Je panique et j'ai du mal à me concentrer.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je prospecte un peu plus mais sans plan structuré.", scores: { C:0, I:1, R:1, Res:0, Dis:1 } },
+      { text: "Ça m'angoisse. J'ai du mal à garder confiance en moi.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Je prospecte un peu plus, mais sans changer fondamentalement mon approche.", scores: { C:0, I:1, R:1, Res:0, Dis:1 } },
+      { text: "Ça fait partie du métier. Inutile de paniquer, les mandats viendront.", scores: { C:0, I:2, R:0, Res:1, Dis:0 } },
+      { text: "J'augmente immédiatement le volume : plus d'appels, plus de terrain, plus d'heures.", scores: { C:0, I:0, R:2, Res:2, Dis:2 } },
     ]
   },
   {
     text: "Le soir, comment tu évalues ta journée de travail ?",
     answers: [
-      { text: "Je vérifie si j'ai fait ce que j'avais prévu et je prépare demain.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je me souviens vaguement de ce que j'ai fait.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
-      { text: "Je pense surtout à ce que je n'ai pas eu le temps de faire.", scores: { C:1, I:0, R:0, Res:0, Dis:0 } },
-      { text: "Je n'ai pas vraiment de rituel du soir.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je repense souvent à ce que je n'ai pas fait ou mal fait dans la journée.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "Le soir c'est pour moi. Je décroche complètement du boulot.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "Je fais le bilan : objectifs du jour cochés ou non, et je planifie le lendemain.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
+      { text: "Ça dépend des jours — je n'ai pas vraiment de rituel de fin de journée.", scores: { C:1, I:1, R:0, Res:0, Dis:0 } },
     ]
   },
   {
     text: "Dans 2 ans, comment tu te vois dans ce métier ?",
     answers: [
-      { text: "Je vois clairement mon objectif de CA, mon mode de vie, mon équilibre.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
-      { text: "Je me vois bien mais sans plan précis pour y arriver.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
-      { text: "J'espère que ça se passera bien, mais j'ai des doutes.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
-      { text: "J'ai un objectif mais je sais que je devrai beaucoup travailler sur ma discipline.", scores: { C:0, I:0, R:1, Res:1, Dis:0 } },
+      { text: "J'espère que ça ira, mais honnêtement j'ai des doutes sur ma capacité à tenir sur la durée.", scores: { C:2, I:0, R:0, Res:0, Dis:0 } },
+      { text: "J'ai une direction générale, mais pas de plan détaillé — on verra bien.", scores: { C:0, I:1, R:1, Res:0, Dis:0 } },
+      { text: "Je me vois bien, mais je préfère rester flexible — trop planifier, ça fige.", scores: { C:0, I:2, R:0, Res:0, Dis:0 } },
+      { text: "J'ai un plan précis : objectif de CA, palier de rétrocession visé, étapes pour y arriver.", scores: { C:0, I:0, R:2, Res:1, Dis:2 } },
     ]
   },
 ];
