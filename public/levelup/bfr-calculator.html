@@ -745,8 +745,8 @@
           <div class="input-wrap"><input type="number" id="loisirs" value="0" min="0"><span class="currency">€</span></div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">Épargne mensuelle souhaitée</div></div>
-          <div class="input-wrap"><input type="number" id="epargne" value="0" min="0"><span class="currency">€</span></div>
+          <div><div class="field-label">Énergie (gaz, électricité…)</div></div>
+          <div class="input-wrap"><input type="number" id="energie" value="150" min="0"><span class="currency">€</span></div>
         </div>
       </div>
     </div>
@@ -894,7 +894,7 @@
   <!-- ══ STEP 3 : ACTIVITE ══ -->
   <div class="section" id="step-3">
     <div class="section-title">Mon <span>activité</span></div>
-    <div class="section-subtitle">Ces données permettent de calculer combien de mandats tu dois signer.</div>
+    <div class="section-subtitle">Ces données permettent de calculer combien de ventes tu dois réaliser.</div>
 
     <div class="field-group">
       <div class="field-group-title"><span class="icon">🏡</span> Paramètres de vente</div>
@@ -961,7 +961,7 @@
 
     <!-- MANDATS -->
     <div class="mandats-box">
-      <h3>🏡 Mandats à signer</h3>
+      <h3>🏡 Ventes à réaliser</h3>
       <div class="mandats-stat">
         <span class="stat-label">Commission moyenne par vente</span>
         <span class="stat-value" id="res-commission">—</span>
@@ -975,11 +975,11 @@
         <span class="stat-value" id="res-net-vente">—</span>
       </div>
       <div class="mandats-stat" style="margin-top:12px;padding-top:12px;border-top:2px solid var(--yellow)">
-        <span class="stat-label" style="font-weight:600;color:var(--white);">Mandats à signer par mois</span>
+        <span class="stat-label" style="font-weight:600;color:var(--white);">Ventes à réaliser par mois</span>
         <span class="stat-value big" id="res-mandats-mois">—</span>
       </div>
       <div class="mandats-stat">
-        <span class="stat-label" style="font-weight:600;color:var(--white);">Mandats à signer par an</span>
+        <span class="stat-label" style="font-weight:600;color:var(--white);">Ventes à réaliser par an</span>
         <span class="stat-value big" id="res-mandats-an">—</span>
       </div>
     </div>
@@ -1051,7 +1051,7 @@
   // Listeners pour le minimum vital live
   document.addEventListener('DOMContentLoaded', () => {
     const chargeIds = ['loyer','alim','sante','assur','abos','transport','credits','famille',
-      'loisirs','epargne','pack_efficity','pack_estim','carbu_pro','outils','marketing',
+      'loisirs','energie','pack_efficity','pack_estim','carbu_pro','outils','marketing',
       'repas','formation','comptable'];
     chargeIds.forEach(id => {
       const el = document.getElementById(id);
@@ -1123,7 +1123,7 @@
   // ── MINIMUM VITAL ──
   function getChargesTotal() {
     const chargesPerso = val('loyer') + val('alim') + val('sante') + val('assur') +
-      val('abos') + val('transport') + val('credits') + val('famille') + val('loisirs') + val('epargne');
+      val('abos') + val('transport') + val('credits') + val('famille') + val('loisirs') + val('energie');
     const chargesPro = val('pack_efficity') + val('pack_estim') + val('carbu_pro') +
       val('outils') + val('marketing') + val('repas') + val('formation') + val('comptable');
     return { chargesPerso, chargesPro, total: chargesPerso + chargesPro };
@@ -1290,7 +1290,7 @@
     document.querySelectorAll('input[type="number"]').forEach(i => {
       const defaults = {
         loyer: 900, alim: 400, sante: 120, assur: 100, abos: 80, transport: 150,
-        credits: 0, famille: 0, loisirs: 0, epargne: 0,
+        credits: 0, famille: 0, loisirs: 0, energie: 150,
         pack_efficity: 105, pack_estim: 84, carbu_pro: 150, outils: 50, marketing: 80,
         repas: 0, formation: 13, comptable: 0,
         revenu_net: 2500, commission_moy: 5500,
