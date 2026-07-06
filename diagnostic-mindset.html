@@ -8,28 +8,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
-  --yellow: #F5C518;
-  --yellow-dark: #c9a500;
-  --black: #080808;
-  --dark: #111111;
-  --dark2: #191919;
-  --dark3: #222222;
-  --gray: #333;
-  --gray-mid: #555;
-  --gray-light: #777;
-  --white: #fff;
-  --craintif: #ef4444;
-  --insouciant: #f59e0b;
-  --realiste: #22c55e;
-  --resilience: #3b82f6;
-  --discipline: #a855f7;
+  --yellow: #F5C518;           /* brand — fonds/boutons uniquement */
+  --yellow-dark: #e0b10a;      /* hover boutons */
+  --yellow-text: #a17800;      /* jaune utilisé comme TEXTE sur fond clair */
+  --bg: #f6f5f0;               /* fond de page */
+  --black: #1c1a13;            /* texte principal / texte sur jaune */
+  --dark: #ffffff;             /* ex-surfaces sombres → blanc (écrans quiz/result) */
+  --dark2: #ffffff;            /* ex-cartes → blanc */
+  --dark3: #f4f2ea;            /* hovers, insets */
+  --gray: #e7e4d9;             /* bordures, pistes de barres */
+  --gray-mid: #a8a396;
+  --gray-light: #6d6a5e;       /* texte secondaire */
+  --white: #1c1a13;            /* ex-texte principal → encre */
+  --craintif: #dc2626;
+  --insouciant: #d97706;
+  --realiste: #16a34a;
+  --resilience: #2563eb;
+  --discipline: #7c3aed;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--black);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--black);
   font-family: 'Barlow', sans-serif;
   font-size: 15px;
   line-height: 1.6;
@@ -45,7 +47,7 @@ body {
    ÉCRAN 0 — INTRO
 ══════════════════════════════ */
 #screen-intro {
-  background: var(--black);
+  background: var(--bg);
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
@@ -59,7 +61,7 @@ body {
   top: -200px; left: 50%;
   transform: translateX(-50%);
   width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(245,197,24,0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(245,197,24,0.18) 0%, transparent 70%);
   pointer-events: none;
 }
 .intro-badge {
@@ -82,7 +84,15 @@ body {
   letter-spacing: -1px;
   margin-bottom: 16px;
 }
-.intro-title em { color: var(--yellow); font-style: normal; display: block; }
+.intro-title em {
+  background: var(--yellow);
+  color: var(--black);
+  font-style: normal;
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 0 14px;
+}
 .intro-sub {
   color: var(--gray-light);
   font-size: 16px;
@@ -107,7 +117,7 @@ body {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
   font-size: 28px;
-  color: var(--yellow);
+  color: var(--yellow-text);
   line-height: 1;
   margin-bottom: 2px;
 }
@@ -127,10 +137,11 @@ body {
 }
 .intro-name-wrap input {
   width: 100%;
-  background: var(--dark2);
-  border: 1px solid var(--gray);
+  background: #fff;
+  border: 1px solid #d9d5c9;
   border-bottom: 2px solid var(--yellow);
-  color: var(--white);
+  border-radius: 8px 8px 0 0;
+  color: var(--black);
   padding: 14px 16px;
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
@@ -138,7 +149,7 @@ body {
   text-align: center;
   letter-spacing: 1px;
 }
-.intro-name-wrap input:focus { outline: none; background: var(--dark3); }
+.intro-name-wrap input:focus { outline: none; background: #fffdf4; }
 .intro-warning {
   font-size: 12px;
   color: var(--gray-mid);
@@ -156,28 +167,35 @@ body {
   text-transform: uppercase;
   padding: 16px 40px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
   transition: all .2s;
   display: inline-block;
 }
 .btn-primary { background: var(--yellow); color: var(--black); }
-.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.3); }
-.btn-secondary { background: transparent; color: var(--gray-light); border: 1px solid var(--gray); font-size: 14px; padding: 12px 24px; }
-.btn-secondary:hover { color: var(--white); border-color: var(--white); }
-.btn-ghost { background: transparent; border: 2px solid var(--yellow); color: var(--yellow); }
+.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.4); }
+.btn-secondary { background: #fff; color: var(--gray-light); border: 1px solid var(--gray); font-size: 14px; padding: 12px 24px; }
+.btn-secondary:hover { color: var(--black); border-color: var(--gray-mid); }
+.btn-ghost { background: transparent; border: 2px solid var(--yellow); color: var(--yellow-text); }
 .btn-ghost:hover { background: var(--yellow); color: var(--black); }
+/* Boutons posés sur le fond jaune de l'engagement-box */
+.engagement-box .btn-ghost { border-color: var(--black); color: var(--black); }
+.engagement-box .btn-ghost:hover { background: var(--black); color: var(--yellow); }
+.engagement-box .btn-primary { background: var(--black); color: var(--yellow); }
+.engagement-box .btn-primary:hover { background: var(--black); opacity: 0.85; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(28,26,19,0.3); }
 
 /* ══════════════════════════════
    ÉCRAN 1 — QUESTIONS
 ══════════════════════════════ */
 #screen-quiz {
-  background: var(--dark);
+  background: var(--bg);
   flex-direction: column;
 }
 
 .quiz-header {
-  background: var(--black);
+  background: #fff;
   border-bottom: 1px solid var(--gray);
+  box-shadow: 0 1px 3px rgba(28,26,19,0.06);
   padding: 16px 28px;
   display: flex;
   align-items: center;
@@ -192,7 +210,7 @@ body {
   color: var(--white);
   white-space: nowrap;
 }
-.quiz-logo span { color: var(--yellow); }
+.quiz-logo span { color: var(--yellow-text); }
 .quiz-progress-wrap { flex: 1; max-width: 300px; }
 .quiz-progress-label {
   font-size: 11px;
@@ -237,7 +255,7 @@ body {
   font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--yellow-text);
   margin-bottom: 12px;
 }
 .q-text {
@@ -258,9 +276,10 @@ body {
 
 .answers { display: flex; flex-direction: column; gap: 10px; }
 .answer-btn {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
-  color: var(--white);
+  border-radius: 10px;
+  color: var(--black);
   padding: 16px 20px;
   text-align: left;
   cursor: pointer;
@@ -297,11 +316,12 @@ body {
   font-size: 18px;
   width: 32px; height: 32px;
   border: 2px solid var(--gray-mid);
+  color: var(--gray-light);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: all .18s;
 }
-.answer-btn:hover .answer-letter { border-color: var(--yellow); color: var(--yellow); }
+.answer-btn:hover .answer-letter { border-color: var(--yellow-text); color: var(--yellow-text); }
 .answer-btn.selected .answer-letter { border-color: var(--black); color: var(--black); background: rgba(0,0,0,0.15); }
 
 .quiz-nav {
@@ -325,7 +345,7 @@ body {
    ÉCRAN 2 — REVEAL
 ══════════════════════════════ */
 #screen-reveal {
-  background: var(--black);
+  background: var(--bg);
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
@@ -394,8 +414,10 @@ body {
   flex-wrap: wrap;
 }
 .reveal-score-pill {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
   padding: 10px 20px;
   font-size: 13px;
   opacity: 0;
@@ -420,13 +442,13 @@ body {
    ÉCRAN 3 — RÉSULTATS
 ══════════════════════════════ */
 #screen-result {
-  background: var(--dark);
+  background: var(--bg);
   flex-direction: column;
   padding-bottom: 60px;
 }
 
 .result-header {
-  background: var(--black);
+  background: #fff;
   border-bottom: 3px solid var(--yellow);
   padding: 20px 32px;
   display: flex;
@@ -440,7 +462,7 @@ body {
   font-weight: 900;
   font-size: 22px;
 }
-.result-logo span { color: var(--yellow); }
+.result-logo span { color: var(--yellow-text); }
 
 .result-body { max-width: 760px; margin: 0 auto; padding: 40px 24px; width: 100%; }
 
@@ -448,6 +470,7 @@ body {
 .profil-hero {
   padding: 36px;
   margin-bottom: 28px;
+  border-radius: 14px;
   position: relative;
   overflow: hidden;
 }
@@ -456,7 +479,7 @@ body {
   position: absolute;
   right: -10px; bottom: -20px;
   font-size: 120px;
-  opacity: 0.08;
+  opacity: 0.12;
   line-height: 1;
   pointer-events: none;
 }
@@ -480,8 +503,10 @@ body {
 /* Score bars */
 .scores-section { margin-bottom: 28px; }
 .score-card {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
   padding: 20px 24px;
   margin-bottom: 12px;
 }
@@ -526,13 +551,14 @@ body {
   font-size: 13px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--yellow-text);
   margin-bottom: 14px;
 }
 .reco-card {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
   border-left: 4px solid var(--yellow);
+  border-radius: 10px;
   padding: 18px 20px;
   margin-bottom: 10px;
   display: flex;
@@ -554,8 +580,10 @@ body {
 
 /* Comparatif */
 .comparatif {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
   padding: 24px;
   margin-bottom: 28px;
 }
@@ -577,9 +605,10 @@ body {
 .comp-profil {
   padding: 14px 10px;
   border: 2px solid transparent;
+  border-radius: 10px;
   transition: all .2s;
 }
-.comp-profil.current { border-color: var(--yellow); background: rgba(245,197,24,0.06); }
+.comp-profil.current { border-color: var(--yellow); background: rgba(245,197,24,0.08); }
 .comp-profil .cp-emoji { font-size: 28px; margin-bottom: 6px; }
 .comp-profil .cp-name {
   font-family: 'Barlow Condensed', sans-serif;
@@ -593,6 +622,7 @@ body {
 .engagement-box {
   background: var(--yellow);
   color: var(--black);
+  border-radius: 14px;
   padding: 28px 32px;
   text-align: center;
   margin-bottom: 28px;
@@ -888,7 +918,7 @@ const QUESTIONS = [
 const PROFILS = {
   Craintif: {
     emoji: '🛡️',
-    color: '#ef4444',
+    color: '#dc2626',
     desc: "Tu as tendance à te protéger davantage que tu n'avances. Les refus t'affectent plus longtemps que nécessaire, tu attends d'être certain avant d'agir, et le doute t'empêche parfois de passer à l'action. Ce n'est pas un manque de talent — c'est un pattern mental qui se travaille.",
     recos: [
       { titre: "La règle des 5 secondes", detail: "Avant chaque appel difficile, compte 5-4-3-2-1 et décroche. Ne laisse pas ton cerveau négocier. La peur disparaît en agissant, jamais en réfléchissant." },
@@ -898,7 +928,7 @@ const PROFILS = {
   },
   Insouciant: {
     emoji: '⚡',
-    color: '#f59e0b',
+    color: '#d97706',
     desc: "Tu as de l'élan, de l'énergie et de la confiance — c'est un vrai atout. Mais tu travailles trop souvent à l'instinct et tu relâches la pression après chaque succès. Ton pipeline souffre de tes creux de motivation. La discipline quotidienne est ton angle mort.",
     recos: [
       { titre: "Mettre en place une semaine type fixe", detail: "Décide une fois pour toutes tes créneaux de prospection — et traite-les comme des rendez-vous clients inamovibles. Ta liberté se construit dans la structure, pas contre elle." },
@@ -908,7 +938,7 @@ const PROFILS = {
   },
   Realiste: {
     emoji: '🏆',
-    color: '#22c55e',
+    color: '#16a34a',
     desc: "Tu combines vision à long terme, capacité d'adaptation et discipline quotidienne. Tu prospectes même quand tu n'en as pas envie, tu analyses tes échecs sans t'y noyer, et tu sais exactement où tu vas. Tu es le profil le plus rare et le plus performant sur la durée.",
     recos: [
       { titre: "Viser le palier supérieur Efficity", detail: "Si tu n'es pas encore à 90% de rétrocession, c'est ton prochain objectif chiffré. Calcule exactement le CA qui manque et restructure ta semaine type pour l'atteindre." },
@@ -1173,7 +1203,7 @@ function showResult() {
         <div class="cp-name" style="color:${pp.color}">${pLabel}</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:${pp.color};margin:6px 0;">${pctVal}%</div>
         <div class="cp-desc">${pk === 'Craintif' ? 'Pessimiste, se protège, hésite à passer à l\'action.' : pk === 'Insouciant' ? 'Confiant mais irrégulier, manque de structure.' : 'Vision long terme, discipline, s\'adapte.'}</div>
-        ${isCurrent ? `<div style="font-size:10px;font-weight:700;color:var(--yellow);letter-spacing:1px;margin-top:8px;text-transform:uppercase;">◀ TON PROFIL</div>` : ''}
+        ${isCurrent ? `<div style="font-size:10px;font-weight:700;color:var(--yellow-text);letter-spacing:1px;margin-top:8px;text-transform:uppercase;">◀ TON PROFIL</div>` : ''}
       </div>
     `;
   }).join('');
@@ -1208,7 +1238,7 @@ async function exportPNG() {
   const name = userName || 'diagnostic-mindset';
   try {
     const canvas = await html2canvas(el, {
-      backgroundColor: '#111111',
+      backgroundColor: '#ffffff',
       scale: 1.5,
       useCORS: true,
       logging: false,

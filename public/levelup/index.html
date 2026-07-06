@@ -8,26 +8,28 @@
 <style>
   :root {
     --yellow: #F5C518;
-    --yellow-dark: #d4a900;
-    --yellow-bg: rgba(245,197,24,0.08);
-    --black: #0f0f0f;
-    --dark: #1a1a1a;
-    --dark2: #222222;
-    --gray: #3a3a3a;
-    --gray-light: #d4d4d4;
-    --white: #ffffff;
-    --green: #22c55e;
-    --blue: #3b82f6;
-    --purple: #a78bfa;
-    --orange: #f97316;
-    --red: #ef4444;
+    --yellow-dark: #e0b10a;
+    --yellow-text: #a17800;
+    --yellow-bg: rgba(245,197,24,0.15);
+    --bg: #f6f5f0;
+    --black: #1c1a13;
+    --dark: #ffffff;
+    --dark2: #faf9f4;
+    --gray: #e7e4d9;
+    --gray-light: #6d6a5e;
+    --white: #1c1a13;
+    --green: #16a34a;
+    --blue: #2563eb;
+    --purple: #7c3aed;
+    --orange: #ea580c;
+    --red: #dc2626;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--black);
-    color: var(--white);
+    background: var(--bg);
+    color: var(--black);
     font-family: 'Barlow', sans-serif;
     font-size: 15px;
     line-height: 1.6;
@@ -36,7 +38,8 @@
 
   /* ── HEADER ── */
   header {
-    background: var(--dark);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
     border-bottom: 3px solid var(--yellow);
     padding: 20px 40px;
     display: flex;
@@ -45,15 +48,16 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    box-shadow: 0 1px 10px rgba(28,26,19,0.06);
   }
   .logo {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
     font-size: 26px;
     letter-spacing: 1px;
-    color: var(--white);
+    color: var(--black);
   }
-  .logo span { color: var(--yellow); }
+  .logo span { color: var(--yellow-text); }
   .badge {
     background: var(--yellow);
     color: var(--black);
@@ -62,12 +66,14 @@
     font-size: 11px;
     letter-spacing: 2px;
     padding: 4px 12px;
+    border-radius: 4px;
     text-transform: uppercase;
   }
 
   /* ── HERO ── */
   .hero {
-    background: var(--dark);
+    background: #ffffff;
+    background-image: radial-gradient(ellipse 70% 90% at 50% -10%, rgba(245,197,24,0.16), transparent);
     border-bottom: 1px solid var(--gray);
     padding: 72px 40px 64px;
     text-align: center;
@@ -77,7 +83,7 @@
     font-weight: 700;
     font-size: 16px;
     letter-spacing: 4px;
-    color: var(--yellow);
+    color: var(--yellow-text);
     text-transform: uppercase;
     margin-bottom: 20px;
   }
@@ -90,7 +96,9 @@
     margin-bottom: 20px;
   }
   .hero h1 em {
-    color: var(--yellow);
+    background: var(--yellow);
+    color: var(--black);
+    padding: 0 14px;
     font-style: normal;
   }
   .hero p {
@@ -130,8 +138,9 @@
 
   /* ── CARD ── */
   .card {
-    background: var(--dark);
+    background: #ffffff;
     border: 1px solid var(--gray);
+    border-radius: 14px;
     padding: 32px 28px;
     cursor: pointer;
     text-decoration: none;
@@ -141,7 +150,8 @@
     gap: 16px;
     position: relative;
     overflow: hidden;
-    transition: border-color .2s, transform .2s, background .2s;
+    box-shadow: 0 1px 3px rgba(28,26,19,0.05);
+    transition: border-color .2s, transform .2s, box-shadow .2s;
   }
   .card::before {
     content: '';
@@ -155,7 +165,7 @@
   }
   .card:hover {
     border-color: var(--card-accent, var(--yellow));
-    background: #1f1f1f;
+    box-shadow: 0 12px 28px rgba(28,26,19,0.10);
     transform: translateY(-3px);
   }
   .card:hover::before { transform: scaleX(1); }
@@ -178,9 +188,10 @@
     font-size: 13px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--card-accent, var(--yellow));
+    color: var(--card-accent, var(--yellow-text));
     background: var(--card-accent-bg, var(--yellow-bg));
     padding: 3px 10px;
+    border-radius: 4px;
     width: fit-content;
   }
 
@@ -209,7 +220,7 @@
     font-size: 15px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--card-accent, var(--yellow));
+    color: var(--card-accent, var(--yellow-text));
     margin-top: 4px;
     transition: gap .2s;
   }
@@ -227,7 +238,7 @@
     color: var(--gray-light);
     font-size: 13px;
   }
-  footer strong { color: var(--yellow); }
+  footer strong { color: var(--yellow-text); }
 
   /* ── RESPONSIVE ── */
   @media (max-width: 860px) {
@@ -266,9 +277,9 @@
 
     <!-- 1. KPImmo Dashboard -->
     <a class="card" href="/"
-       style="--card-accent:#a78bfa; --card-accent-bg:rgba(167,139,250,0.08);">
+       style="--card-accent:#7c3aed; --card-accent-bg:rgba(124,58,237,0.08);">
       <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
           <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
         </svg>
@@ -284,9 +295,9 @@
 
     <!-- 2. Plan d'Action SMART -->
     <a class="card" href="plan-action-smart.html"
-       style="--card-accent:#F5C518; --card-accent-bg:rgba(245,197,24,0.08);">
+       style="--card-accent:#a17800; --card-accent-bg:rgba(245,197,24,0.15);">
       <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a106" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
         </svg>
       </div>
@@ -301,9 +312,9 @@
 
     <!-- 3. Calculateur BFR -->
     <a class="card" href="bfr-calculator.html"
-       style="--card-accent:#22c55e; --card-accent-bg:rgba(34,197,94,0.08);">
+       style="--card-accent:#16a34a; --card-accent-bg:rgba(22,163,74,0.08);">
       <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
         </svg>
       </div>
@@ -318,9 +329,9 @@
 
     <!-- 4. Semaine Type -->
     <a class="card" href="semaine-type.html"
-       style="--card-accent:#3b82f6; --card-accent-bg:rgba(59,130,246,0.08);">
+       style="--card-accent:#2563eb; --card-accent-bg:rgba(37,99,235,0.08);">
       <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
           <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
@@ -336,9 +347,9 @@
 
     <!-- 5. Diagnostic Mindset -->
     <a class="card" href="diagnostic-mindset.html"
-       style="--card-accent:#f97316; --card-accent-bg:rgba(249,115,22,0.08);">
+       style="--card-accent:#ea580c; --card-accent-bg:rgba(234,88,12,0.08);">
       <div class="card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><circle cx="12" cy="12" r="10"/>
           <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>

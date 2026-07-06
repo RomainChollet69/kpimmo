@@ -8,25 +8,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
-  --yellow: #F5C518;
-  --yellow-dark: #d4a900;
-  --yellow-bg: rgba(245,197,24,0.08);
-  --black: #0f0f0f;
-  --dark: #1a1a1a;
-  --dark2: #222222;
-  --dark3: #2a2a2a;
-  --gray: #3a3a3a;
-  --gray-mid: #555;
-  --gray-light: #888;
-  --white: #fff;
-  --green: #22c55e;
-  --blue: #3b82f6;
-  --red: #ef4444;
+  --yellow: #F5C518;           /* brand — fonds/boutons uniquement */
+  --yellow-dark: #e0b10a;      /* hover boutons */
+  --yellow-text: #a17800;      /* jaune utilisé comme TEXTE sur fond clair */
+  --yellow-bg: rgba(245,197,24,0.15);
+  --bg: #f6f5f0;               /* fond de page */
+  --black: #1c1a13;            /* texte principal / texte sur jaune */
+  --dark: #ffffff;             /* ex-surfaces sombres (header, hero) → blanc */
+  --dark2: #ffffff;            /* ex-cartes → blanc */
+  --dark3: #f4f2ea;            /* insets, hovers, champs imbriqués */
+  --gray: #e7e4d9;             /* bordures, pistes de barres */
+  --gray-mid: #a8a396;
+  --gray-light: #6d6a5e;       /* texte secondaire */
+  --white: #1c1a13;            /* était le texte principal → devient encre */
+  --green: #16a34a;
+  --blue: #2563eb;
+  --red: #dc2626;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: var(--black);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--black);
   font-family: 'Barlow', sans-serif;
   font-size: 15px;
   line-height: 1.6;
@@ -37,6 +39,7 @@ body {
 header {
   background: var(--dark);
   border-bottom: 3px solid var(--yellow);
+  box-shadow: 0 1px 10px rgba(28,26,19,0.06);
   padding: 16px 32px;
   display: flex;
   align-items: center;
@@ -45,7 +48,7 @@ header {
   flex-wrap: wrap; gap: 12px;
 }
 .logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 24px; }
-.logo span { color: var(--yellow); }
+.logo span { color: var(--yellow-text); }
 .logo small { font-size: 14px; font-weight: 400; color: var(--gray-light); }
 
 /* ── HERO ── */
@@ -62,7 +65,7 @@ header {
   line-height: 1;
   margin-bottom: 10px;
 }
-.hero h1 em { color: var(--yellow); font-style: normal; }
+.hero h1 em { background: var(--yellow); color: var(--black); padding: 0 10px; font-style: normal; }
 .hero p { color: var(--gray-light); font-size: 15px; max-width: 520px; margin: 0 auto; }
 
 /* ── MAIN ── */
@@ -83,7 +86,7 @@ header {
   font-size: 11px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--yellow-text);
   margin-bottom: 8px;
 }
 .section-title {
@@ -112,12 +115,13 @@ header {
   color: var(--gray-light);
   margin-bottom: 8px;
 }
-.field label span { color: var(--yellow); font-size: 11px; margin-left: 6px; text-transform: none; letter-spacing: 0; }
+.field label span { color: var(--yellow-text); font-size: 11px; margin-left: 6px; text-transform: none; letter-spacing: 0; }
 textarea, input[type="text"], input[type="date"], select {
   width: 100%;
-  background: var(--dark2);
-  border: 1px solid var(--gray);
-  color: var(--white);
+  background: #fff;
+  border: 1px solid #d9d5c9;
+  border-radius: 8px;
+  color: var(--black);
   padding: 14px 16px;
   font-family: 'Barlow', sans-serif;
   font-size: 15px;
@@ -127,10 +131,10 @@ textarea, input[type="text"], input[type="date"], select {
 textarea:focus, input:focus, select:focus {
   outline: none;
   border-color: var(--yellow);
-  background: var(--dark3);
+  box-shadow: 0 0 0 3px rgba(245,197,24,0.2);
 }
 textarea { min-height: 90px; }
-input[type="date"] { color-scheme: dark; }
+input[type="date"] { color-scheme: light; }
 
 .field-hint {
   font-size: 12px;
@@ -147,8 +151,9 @@ input[type="date"] { color-scheme: dark; }
   margin-top: 12px;
 }
 .smart-pill {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
+  border-radius: 8px;
   padding: 8px 6px;
   text-align: center;
   transition: all .2s;
@@ -162,13 +167,16 @@ input[type="date"] { color-scheme: dark; }
 }
 .smart-pill .word { font-size: 10px; color: var(--gray-light); }
 .smart-pill.ok { background: var(--yellow-bg); border-color: var(--yellow); }
-.smart-pill.ok .letter { color: var(--yellow); }
+.smart-pill.ok .letter { color: var(--yellow-text); }
 
 /* ── CARDS ── */
 .card {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
   border-left: 4px solid var(--yellow);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
+  overflow: hidden;
   padding: 24px;
   margin-bottom: 16px;
 }
@@ -178,7 +186,7 @@ input[type="date"] { color-scheme: dark; }
   font-size: 13px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--yellow-text);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -189,6 +197,7 @@ input[type="date"] { color-scheme: dark; }
 .obj-block {
   background: var(--yellow);
   color: var(--black);
+  border-radius: 12px;
   padding: 24px 28px;
   margin-bottom: 24px;
 }
@@ -216,8 +225,10 @@ input[type="date"] { color-scheme: dark; }
 
 /* ── ACTION CARDS ── */
 .action-card {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
   margin-bottom: 12px;
   overflow: hidden;
   transition: border-color .2s;
@@ -246,7 +257,7 @@ input[type="date"] { color-scheme: dark; }
   font-size: 14px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--yellow-text);
   flex: 1;
 }
 .action-body { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -262,25 +273,29 @@ input[type="date"] { color-scheme: dark; }
 }
 .action-field input, .action-field select, .action-field textarea {
   width: 100%;
-  background: var(--dark);
-  border: 1px solid var(--gray);
-  color: var(--white);
+  background: #fff;
+  border: 1px solid #d9d5c9;
+  border-radius: 8px;
+  color: var(--black);
   padding: 9px 12px;
   font-family: 'Barlow', sans-serif;
   font-size: 13px;
   transition: border-color .2s;
 }
 .action-field input:focus, .action-field select:focus, .action-field textarea:focus {
-  outline: none; border-color: var(--yellow);
+  outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(245,197,24,0.2);
 }
 .action-field.full { grid-column: 1 / -1; }
 .action-field textarea { min-height: 56px; resize: vertical; }
 
 /* ── LOADING ── */
 .loading-box {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
   border-left: 4px solid var(--yellow);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
+  overflow: hidden;
   padding: 32px;
   text-align: center;
   display: none;
@@ -299,7 +314,7 @@ input[type="date"] { color-scheme: dark; }
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 18px;
-  color: var(--yellow);
+  color: var(--yellow-text);
   margin-bottom: 6px;
 }
 .loading-sub { font-size: 13px; color: var(--gray-light); }
@@ -314,21 +329,25 @@ input[type="date"] { color-scheme: dark; }
   text-transform: uppercase;
   padding: 13px 28px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
   transition: all .2s;
 }
 .btn-primary { background: var(--yellow); color: var(--black); }
-.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); }
-.btn-secondary { background: transparent; color: var(--gray-light); border: 1px solid var(--gray); }
-.btn-secondary:hover { color: var(--white); border-color: var(--white); }
-.btn-ghost { background: transparent; color: var(--yellow); border: 1px solid var(--yellow); }
+.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(245,197,24,0.4); }
+.btn-secondary { background: #fff; color: var(--gray-light); border: 1px solid var(--gray); }
+.btn-secondary:hover { color: var(--black); border-color: var(--gray-mid); }
+.btn-ghost { background: transparent; color: var(--yellow-text); border: 1px solid var(--yellow-text); }
 .btn-ghost:hover { background: var(--yellow); color: var(--black); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
 
 /* ── FICHE FINALE ── */
 #fiche {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28,26,19,0.05);
+  overflow: hidden;
   padding: 32px;
   margin-bottom: 24px;
 }
@@ -347,11 +366,12 @@ input[type="date"] { color-scheme: dark; }
   font-weight: 900;
   font-size: 22px;
 }
-.fiche-logo span { color: var(--yellow); }
+.fiche-logo span { color: var(--yellow-text); }
 .fiche-meta { text-align: right; font-size: 12px; color: var(--gray-light); }
 .fiche-obj {
   background: var(--yellow);
   color: var(--black);
+  border-radius: 12px;
   padding: 20px 24px;
   margin-bottom: 20px;
 }
@@ -413,16 +433,17 @@ input[type="date"] { color-scheme: dark; }
   gap: 20px;
 }
 .fe-label { font-size: 11px; color: var(--gray-light); margin-bottom: 8px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-.fe-line { border-bottom: 1px solid var(--gray-mid); height: 32px; margin-top: 4px; }
+.fe-line { border-bottom: 1px solid #b3ada0; height: 32px; margin-top: 4px; }
 
 /* ── INFOBOX ── */
 .infobox {
-  background: var(--dark2);
-  border: 1px solid var(--gray);
+  background: #eef4fd;
+  border: 1px solid #d5e3f7;
   border-left: 4px solid var(--blue);
+  border-radius: 10px;
   padding: 14px 16px;
   font-size: 13px;
-  color: #ccc;
+  color: #3f4a5a;
   margin-bottom: 20px;
   line-height: 1.6;
 }
@@ -540,7 +561,7 @@ input[type="date"] { color-scheme: dark; }
         </div>
       </div>
 
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:12px;">🚀 Les 4 Actions SMART</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--yellow-text);margin-bottom:12px;">🚀 Les 4 Actions SMART</div>
       <div id="actions-container"></div>
 
       <div class="btn-row">
@@ -826,7 +847,7 @@ function buildFiche() {
         <div class="fa-content">
           <div class="fa-title">${titre}</div>
           <div class="fa-detail">${desc}</div>
-          ${creneau ? `<div class="fa-detail" style="margin-top:4px;color:var(--yellow)">⏰ ${creneau}</div>` : ''}
+          ${creneau ? `<div class="fa-detail" style="margin-top:4px;color:var(--yellow-text)">⏰ ${creneau}</div>` : ''}
         </div>
         <div class="fa-meta">
           <strong>${volume}</strong>
@@ -853,7 +874,7 @@ async function exportPNG() {
   const prenom = document.getElementById('prenom').value || 'plan-action';
   try {
     const canvas = await html2canvas(el, {
-      backgroundColor: '#222222',
+      backgroundColor: '#ffffff',
       scale: 2,
       useCORS: true,
       logging: false,

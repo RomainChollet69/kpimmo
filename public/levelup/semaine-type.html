@@ -8,15 +8,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
-  --yellow: #F5C518;
-  --yellow-dark: #d4a900;
-  --black: #0f0f0f;
-  --dark: #1a1a1a;
-  --dark2: #242424;
-  --dark3: #2e2e2e;
-  --gray: #3a3a3a;
-  --gray-light: #d4d4d4;
-  --white: #ffffff;
+  --yellow: #F5C518;           /* brand — fonds/boutons uniquement */
+  --yellow-dark: #e0b10a;      /* hover boutons */
+  --yellow-text: #a17800;      /* jaune utilisé comme TEXTE sur fond clair */
+  --bg: #f6f5f0;               /* fond de page */
+  --black: #1c1a13;            /* texte principal / texte sur jaune */
+  --dark: #ffffff;             /* ex-surfaces sombres (header, hero) → blanc */
+  --dark2: #ffffff;            /* ex-cartes/cellules → blanc */
+  --dark3: #f4f2ea;            /* hovers, insets */
+  --gray: #e7e4d9;             /* bordures */
+  --gray-light: #6d6a5e;       /* texte secondaire */
+  --white: #1c1a13;            /* ex-texte principal → encre (blanc réel hard-codé #fff où nécessaire) */
 
   /* Catégories */
   --c1: #3b82f6; /* Prospection téléphonique */
@@ -35,8 +37,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--black);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--black);
   font-family: 'Barlow', sans-serif;
   font-size: 16px;
   min-height: 100vh;
@@ -47,6 +49,7 @@ body {
 header {
   background: var(--dark);
   border-bottom: 3px solid var(--yellow);
+  box-shadow: 0 1px 10px rgba(28,26,19,0.06);
   padding: 16px 28px;
   display: flex;
   align-items: center;
@@ -64,7 +67,7 @@ header {
   color: var(--white);
   white-space: nowrap;
 }
-.logo span { color: var(--yellow); }
+.logo span { color: var(--yellow-text); }
 .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .btn {
   font-family: 'Barlow Condensed', sans-serif;
@@ -74,16 +77,17 @@ header {
   text-transform: uppercase;
   padding: 10px 20px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
   transition: all .2s;
   white-space: nowrap;
 }
 .btn-primary { background: var(--yellow); color: var(--black); }
-.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-1px); }
-.btn-secondary { background: transparent; color: var(--gray-light); border: 1px solid var(--gray); }
-.btn-secondary:hover { color: var(--white); border-color: var(--white); }
+.btn-primary:hover { background: var(--yellow-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(245,197,24,0.4); }
+.btn-secondary { background: #fff; color: var(--gray-light); border: 1px solid var(--gray); }
+.btn-secondary:hover { color: var(--black); border-color: #a8a396; }
 .btn-danger { background: transparent; color: #ef4444; border: 1px solid #ef4444; }
-.btn-danger:hover { background: #ef4444; color: var(--white); }
+.btn-danger:hover { background: #dc2626; color: #fff; }
 
 /* ── HERO ── */
 .hero {
@@ -103,7 +107,7 @@ header {
   line-height: 1;
   margin-bottom: 6px;
 }
-.hero-text h1 em { color: var(--yellow); font-style: normal; }
+.hero-text h1 em { background: var(--yellow); color: var(--black); padding: 0 8px; font-style: normal; }
 .hero-text p { color: var(--gray-light); font-size: 16px; max-width: 480px; line-height: 1.5; }
 
 /* ── LAYOUT ── */
@@ -115,7 +119,7 @@ header {
 
 /* ── SIDEBAR ── */
 .sidebar {
-  background: var(--dark2);
+  background: #fff;
   border-right: 1px solid var(--gray);
   padding: 20px 16px;
   display: flex;
@@ -141,11 +145,11 @@ header {
 
 .palette-block {
   padding: 10px 12px;
-  border-radius: 2px;
+  border-radius: 8px;
   cursor: grab;
   font-weight: 600;
   font-size: 14px;
-  color: var(--white);
+  color: var(--black);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -156,7 +160,7 @@ header {
 .palette-block:active { cursor: grabbing; transform: scale(1.03); }
 .palette-block .dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: rgba(255,255,255,0.5);
+  background: rgba(28,26,19,0.3);
   flex-shrink: 0;
 }
 
@@ -171,12 +175,12 @@ header {
 .stat-color {
   width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
 }
-.stat-name { font-size: 13px; color: #bbb; flex: 1; }
+.stat-name { font-size: 13px; color: var(--gray-light); flex: 1; }
 .stat-val {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 14px;
-  color: var(--yellow);
+  color: var(--yellow-text);
   width: 32px;
   text-align: right;
 }
@@ -191,17 +195,18 @@ header {
 
 /* ── ALERT ── */
 .alert-box {
-  background: var(--dark3);
-  border: 1px solid var(--gray);
+  background: #fdf6dc;
+  border: 1px solid #eeddad;
   border-left: 3px solid var(--yellow);
+  border-radius: 8px;
   padding: 10px 12px;
   font-size: 13px;
-  color: #ccc;
+  color: #5c5646;
   line-height: 1.5;
   display: none;
 }
 .alert-box.visible { display: block; }
-.alert-box strong { color: var(--yellow); }
+.alert-box strong { color: var(--yellow-text); }
 
 /* ── INSTRUCTIONS ── */
 .instructions {
@@ -209,7 +214,7 @@ header {
   color: var(--gray-light);
   line-height: 1.6;
 }
-.instructions strong { color: #ccc; }
+.instructions strong { color: var(--black); }
 
 /* ── GRID AREA ── */
 .grid-area {
@@ -224,16 +229,17 @@ header {
 }
 .grid-name-row label { font-size: 15px; color: var(--gray-light); }
 #conseiller-name {
-  background: var(--dark2);
-  border: 1px solid var(--gray);
-  color: var(--white);
+  background: #fff;
+  border: 1px solid #d9d5c9;
+  border-radius: 8px;
+  color: var(--black);
   padding: 6px 12px;
   font-family: 'Barlow', sans-serif;
   font-size: 15px;
   font-weight: 600;
   width: 220px;
 }
-#conseiller-name:focus { outline: none; border-color: var(--yellow); }
+#conseiller-name:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(245,197,24,0.2); }
 
 /* ── GRID ── */
 #grid-wrapper { min-width: 820px; }
@@ -245,8 +251,9 @@ header {
   margin-bottom: 2px;
 }
 .grid-header .day-head {
-  background: var(--dark2);
-  border: 1px solid var(--gray);
+  background: #1c1a13;
+  border: 1px solid #1c1a13;
+  border-radius: 6px;
   text-align: center;
   padding: 10px 4px;
   font-family: 'Barlow Condensed', sans-serif;
@@ -276,7 +283,7 @@ header {
 }
 
 .cell {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
   height: var(--cell-h);
   position: relative;
@@ -288,17 +295,17 @@ header {
   background: rgba(245, 197, 24, 0.12);
   border-color: var(--yellow);
 }
-.cell.half-hour { border-top: 1px dashed #333; }
+.cell.half-hour { border-top: 1px dashed #ddd9cc; }
 
 /* ── BLOCK ON GRID ── */
 .grid-block {
   position: absolute;
   left: 2px; right: 2px; top: 2px;
-  border-radius: 2px;
+  border-radius: 6px;
   padding: 4px 7px;
   font-size: 11px;
   font-weight: 600;
-  color: var(--white);
+  color: #fff;
   cursor: grab;
   z-index: 10;
   overflow: hidden;
@@ -315,7 +322,7 @@ header {
   position: absolute;
   top: 2px; right: 4px;
   font-size: 12px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.75);
   cursor: pointer;
   font-weight: 900;
   line-height: 1;
@@ -327,14 +334,14 @@ header {
   bottom: 0; left: 0; right: 0;
   height: 6px;
   cursor: ns-resize;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.25);
 }
 
 /* ── MODAL ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(28,26,19,0.45);
   z-index: 500;
   display: none;
   align-items: center;
@@ -342,9 +349,11 @@ header {
 }
 .modal-overlay.open { display: flex; }
 .modal {
-  background: var(--dark2);
+  background: #fff;
   border: 1px solid var(--gray);
   border-top: 4px solid var(--yellow);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(28,26,19,0.2);
   padding: 28px 32px;
   width: 380px;
   max-width: 95vw;
@@ -357,19 +366,20 @@ header {
   font-weight: 900;
   font-size: 22px;
   margin-bottom: 20px;
-  color: var(--yellow);
+  color: var(--yellow-text);
 }
 .modal label { font-size: 14px; color: var(--gray-light); display: block; margin-bottom: 5px; margin-top: 14px; text-transform: uppercase; letter-spacing: 1px; }
 .modal select, .modal input[type="text"] {
   width: 100%;
-  background: var(--black);
-  border: 1px solid var(--gray);
-  color: var(--white);
+  background: #fff;
+  border: 1px solid #d9d5c9;
+  border-radius: 8px;
+  color: var(--black);
   padding: 10px 12px;
   font-family: 'Barlow', sans-serif;
   font-size: 16px;
 }
-.modal select:focus, .modal input:focus { outline: none; border-color: var(--yellow); }
+.modal select:focus, .modal input:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(245,197,24,0.2); }
 .modal-btns { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
 
 /* ── COLOR PREVIEW ── */
@@ -383,12 +393,13 @@ header {
   padding: 5px 10px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--white);
+  color: var(--black);
+  border-radius: 6px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: border-color .15s;
 }
-.cat-chip.selected { border-color: var(--white); }
+.cat-chip.selected { border-color: var(--black); }
 
 /* ── PRINT ── */
 @media print {
@@ -795,7 +806,7 @@ async function exportPNG() {
   const name = document.getElementById('conseiller-name').value || 'semaine-type';
   try {
     const canvas = await html2canvas(el, {
-      backgroundColor: '#1a1a1a',
+      backgroundColor: '#ffffff',
       scale: 2,
       useCORS: true,
       logging: false,
