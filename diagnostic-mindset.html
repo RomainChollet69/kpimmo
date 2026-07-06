@@ -678,6 +678,7 @@ body {
   </div>
   <p class="intro-warning">Réponds honnêtement — pas ce que tu voudrais être, mais ce que tu es vraiment aujourd'hui. Il n'y a pas de mauvais profil.</p>
   <button class="btn btn-primary" onclick="startQuiz()">Commencer le diagnostic →</button>
+  <div id="last-result-wrap" style="margin-top:16px;display:none;"></div>
 </div>
 
 <!-- ══════════════════════════════
@@ -713,6 +714,7 @@ body {
   <div class="reveal-name" id="reveal-name"></div>
   <div class="reveal-emoji" id="reveal-emoji"></div>
   <div class="reveal-profil" id="reveal-profil"></div>
+  <div id="reveal-mixte" style="font-size:15px;color:var(--gray-light);margin-top:4px;opacity:0;transition:opacity .6s ease;"></div>
   <div class="reveal-scores" id="reveal-scores"></div>
   <div class="reveal-cta" id="reveal-cta">
     <button class="btn btn-primary" onclick="showResult()">Voir mon analyse complète →</button>
@@ -746,6 +748,8 @@ body {
     <div class="reco-section">
       <div class="reco-title">🎯 Tes 3 recommandations personnalisées</div>
       <div id="recos-container"></div>
+      <div id="reco-bonus-container"></div>
+      <div id="outils-container"></div>
     </div>
 
     <div class="engagement-box">
@@ -924,6 +928,10 @@ const PROFILS = {
       { titre: "La règle des 5 secondes", detail: "Avant chaque appel difficile, compte 5-4-3-2-1 et décroche. Ne laisse pas ton cerveau négocier. La peur disparaît en agissant, jamais en réfléchissant." },
       { titre: "Journaliser tes victoires quotidiennes", detail: "Chaque soir, écris 3 choses concrètes que tu as faites malgré l'inconfort. Ton cerveau a besoin de preuves que tu es capable — donne-les lui." },
       { titre: "Fixer des micro-objectifs hebdomadaires", detail: "Pas 10 mandats en 2 mois. 3 appels PAP aujourd'hui. La confiance se construit acte par acte, pas projet par projet." },
+    ],
+    outils: [
+      { label: 'Plan d\'Action SMART', href: 'plan-action-smart.html' },
+      { label: 'Ma Semaine Type', href: 'semaine-type.html' },
     ]
   },
   Insouciant: {
@@ -934,6 +942,10 @@ const PROFILS = {
       { titre: "Mettre en place une semaine type fixe", detail: "Décide une fois pour toutes tes créneaux de prospection — et traite-les comme des rendez-vous clients inamovibles. Ta liberté se construit dans la structure, pas contre elle." },
       { titre: "Calculer ton BFR chaque trimestre", detail: "Ce chiffre doit te rappeler pourquoi tu prospectes même quand tout va bien. Affiche-le sur ton bureau. Quand tu veux lever le pied après un succès, regarde-le." },
       { titre: "Créer un 'rituel anti-relâchement'", detail: "Le lendemain de chaque vente signée, tu doubles ton volume de prospection. Transforme le succès en accélérateur plutôt qu'en frein." },
+    ],
+    outils: [
+      { label: 'Ma Semaine Type', href: 'semaine-type.html' },
+      { label: 'Calculateur BFR', href: 'bfr-calculator.html' },
     ]
   },
   Realiste: {
@@ -944,9 +956,16 @@ const PROFILS = {
       { titre: "Viser le palier supérieur Efficity", detail: "Si tu n'es pas encore à 90% de rétrocession, c'est ton prochain objectif chiffré. Calcule exactement le CA qui manque et restructure ta semaine type pour l'atteindre." },
       { titre: "Devenir un référent pour le groupe", detail: "Ton profil a une valeur pédagogique. Partage tes méthodes avec les conseillers plus junior — enseigner renforce encore plus que pratiquer." },
       { titre: "Travailler ta zone de génie", detail: "Tu maîtrises la base. Identifie maintenant le levier à 80% de ton CA et concentre 80% de ton temps dessus. Moins d'actions, plus d'impact." },
+    ],
+    outils: [
+      { label: 'Calculateur BFR', href: 'bfr-calculator.html' },
+      { label: 'Dashboard KPImmo', href: '/' },
     ]
   }
 };
+
+// Libellés des profils
+const PROFIL_LABELS = { Craintif: 'Le Craintif', Insouciant: "L'Insouciant", Realiste: 'Le Réaliste' };
 
 // ══════════════════════════════
 // STATE
@@ -966,6 +985,9 @@ function showScreen(id) {
 
 function startQuiz() {
   userName = document.getElementById('user-name').value.trim() || 'Toi';
+  if (userName && userName !== 'Toi') {
+    try { localStorage.setItem('levelup:prenom', userName); } catch (e) {}
+  }
   answers = [];
   currentQ = 0;
   showScreen('screen-quiz');
@@ -1075,8 +1097,27 @@ function computeResults() {
   const resPct = ResMax > 0 ? Math.round((Res / ResMax) * 100) : 0;
   const disPct = DisMax > 0 ? Math.round((Dis / DisMax) * 100) : 0;
 
+  // Profil mixte : écart < 10 points entre le 1er et le 2e profil
+  const sorted = [['Craintif', pC], ['Insouciant', pI], ['Realiste', pR]]
+    .sort((a, b) => b[1] - a[1]);
+  // Le 2e profil = le mieux classé qui n'est pas le profil dominant
+  const secondEntry = sorted.find(([key]) => key !== profil) || sorted[1];
+  const topPct = profil === 'Craintif' ? pC : profil === 'Insouciant' ? pI : pR;
+  const second = secondEntry[0];
+  const secondPct = secondEntry[1];
+  const mixte = (topPct - secondPct) < 10;
+
   // Store for render
-  window._results = { profil, pC, pI, pR, resPct, disPct };
+  window._results = { profil, pC, pI, pR, resPct, disPct, mixte, second, secondPct };
+
+  // Persistance du dernier résultat
+  try {
+    localStorage.setItem('levelup:mindset:result', JSON.stringify({
+      userName,
+      results: window._results,
+      date: new Date().toLocaleDateString('fr-FR'),
+    }));
+  } catch (e) {}
 
   runReveal();
 }
@@ -1086,8 +1127,13 @@ function computeResults() {
 // ══════════════════════════════
 function runReveal() {
   showScreen('screen-reveal');
-  const { profil, resPct, disPct } = window._results;
+  const { profil, resPct, disPct, mixte, second, secondPct } = window._results;
   const p = PROFILS[profil];
+
+  // Reset de la mention mixte (utile en cas de refaire le diagnostic)
+  const mixteEl = document.getElementById('reveal-mixte');
+  mixteEl.textContent = '';
+  mixteEl.style.opacity = 0;
 
   document.getElementById('reveal-name').textContent = userName;
   document.getElementById('reveal-profil').textContent = profil === 'Realiste' ? 'Le Réaliste' : profil === 'Craintif' ? 'Le Craintif' : "L'Insouciant";
@@ -1106,6 +1152,10 @@ function runReveal() {
 
   setTimeout(() => {
     document.getElementById('reveal-profil').classList.add('pop');
+    if (mixte) {
+      mixteEl.textContent = `Profil mixte — forte composante ${PROFIL_LABELS[second]} (${secondPct} %)`;
+      mixteEl.style.opacity = 1;
+    }
   }, 1400);
 
   // Scores
@@ -1136,9 +1186,10 @@ function runReveal() {
 // ══════════════════════════════
 function showResult() {
   showScreen('screen-result');
-  const { profil, pC, pI, pR, resPct, disPct } = window._results;
+  const { profil, pC, pI, pR, resPct, disPct, mixte, second, secondPct } = window._results;
   const p = PROFILS[profil];
   const profilLabel = profil === 'Realiste' ? 'Le Réaliste' : profil === 'Craintif' ? 'Le Craintif' : "L'Insouciant";
+  const pSecond = mixte ? PROFILS[second] : null;
 
   // Hero
   document.getElementById('result-profil-hero').style.background = p.color + '18';
@@ -1148,6 +1199,7 @@ function showResult() {
     <div class="ph-label">Ton profil · ${userName}</div>
     <div class="ph-name" style="color:${p.color}">${profilLabel} ${p.emoji}</div>
     <div class="ph-desc">${p.desc}</div>
+    ${mixte ? `<div style="margin-top:12px;font-size:13px;"><strong style="color:${pSecond.color}">Profil mixte :</strong> tu combines une forte composante ${PROFIL_LABELS[second]} (${secondPct} %).</div>` : ''}
   `;
 
   // Score profil
@@ -1219,6 +1271,32 @@ function showResult() {
     </div>
   `).join('');
 
+  // Bonus reco (profil mixte) — conteneur dédié pour ne pas toucher aux recos existantes
+  const bonusContainer = document.getElementById('reco-bonus-container');
+  if (mixte) {
+    const bonusReco = pSecond.recos[0];
+    bonusContainer.innerHTML = `
+      <div class="reco-title" style="margin-top:18px;">🎁 Bonus — ta composante ${PROFIL_LABELS[second]}</div>
+      <div class="reco-card">
+        <div class="reco-num">+</div>
+        <div class="reco-content">
+          <strong>${bonusReco.titre}</strong>
+          <span>${bonusReco.detail}</span>
+        </div>
+      </div>
+    `;
+  } else {
+    bonusContainer.innerHTML = '';
+  }
+
+  // Outils recommandés
+  document.getElementById('outils-container').innerHTML = `
+    <div class="reco-title" style="margin-top:18px;">🧰 Tes outils prioritaires</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      ${p.outils.map(o => `<a class="btn btn-ghost" style="font-size:14px;padding:10px 18px;text-decoration:none;" href="${o.href}">${o.label} →</a>`).join('')}
+    </div>
+  `;
+
   // Animate bars after render
   setTimeout(() => {
     const barProfil = document.getElementById('bar-profil');
@@ -1252,6 +1330,37 @@ async function exportPNG() {
     alert('Export indisponible dans cet aperçu. Utilisez le bouton Imprimer.');
   }
 }
+
+// ══════════════════════════════
+// PERSISTANCE — init au chargement
+// ══════════════════════════════
+(function initPersistence() {
+  // Pré-remplissage du prénom (clé partagée Level Up !)
+  try {
+    const savedName = localStorage.getItem('levelup:prenom');
+    const nameInput = document.getElementById('user-name');
+    if (savedName && nameInput && !nameInput.value) nameInput.value = savedName;
+  } catch (e) {}
+
+  // Bouton « revoir mon dernier résultat »
+  try {
+    const raw = localStorage.getItem('levelup:mindset:result');
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.results || !saved.results.profil) return;
+    const wrap = document.getElementById('last-result-wrap');
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary';
+    btn.textContent = `↺ Revoir mon dernier résultat (du ${saved.date || '—'})`;
+    btn.onclick = function() {
+      userName = saved.userName || 'Toi';
+      window._results = saved.results;
+      showResult();
+    };
+    wrap.appendChild(btn);
+    wrap.style.display = 'block';
+  } catch (e) {}
+})();
 </script>
 </body>
 </html>

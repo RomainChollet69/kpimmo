@@ -242,11 +242,11 @@ header {
 #conseiller-name:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(245,197,24,0.2); }
 
 /* ── GRID ── */
-#grid-wrapper { min-width: 820px; }
+#grid-wrapper { min-width: 975px; }
 
 .grid-header {
   display: grid;
-  grid-template-columns: var(--time-w) repeat(5, var(--day-w));
+  grid-template-columns: var(--time-w) repeat(6, var(--day-w));
   gap: 2px;
   margin-bottom: 2px;
 }
@@ -267,7 +267,7 @@ header {
 
 .grid-body {
   display: grid;
-  grid-template-columns: var(--time-w) repeat(5, var(--day-w));
+  grid-template-columns: var(--time-w) repeat(6, var(--day-w));
   gap: 2px;
 }
 
@@ -472,6 +472,8 @@ header {
       <div class="stats-panel" id="stats-panel"></div>
     </div>
 
+    <div id="plan-reminder" style="display:none;"></div>
+
     <div class="alert-box" id="alert-box">
       <strong>⚠️ Attention</strong><br>
       La prospection représente moins de 20% de ta semaine. Les champions prospectent en premier, chaque jour.
@@ -515,7 +517,7 @@ const CATS = [
   { id: 'perso',  label: 'Événements personnels',     color: '#6b7280', emoji: '🏠' },
 ];
 
-const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 // Slots: 7h00 → 20h00, par demi-heure = 26 slots
 const START_H = 7, END_H = 20;
 const SLOTS = [];
@@ -752,6 +754,79 @@ function renderBlocks() {
   });
 
   updateStats();
+  saveState();
+}
+
+// ── PERSISTANCE ──
+const STORAGE_KEY = 'levelup:semaine';
+const PRENOM_KEY = 'levelup:prenom';
+
+function saveState() {
+  try {
+    const name = document.getElementById('conseiller-name').value;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ blocks, name }));
+  } catch(e) { /* stockage indisponible */ }
+}
+
+function restoreState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && Array.isArray(data.blocks)) {
+        blocks = data.blocks.filter(b =>
+          b && typeof b === 'object' &&
+          Number.isInteger(b.day) && b.day >= 0 && b.day < DAYS.length &&
+          Number.isInteger(b.slot) && b.slot >= 0 && b.slot < SLOTS.length &&
+          CATS.some(c => c.id === b.catId) &&
+          Number.isInteger(b.duration) && b.duration >= 1
+        );
+      }
+      if (data && typeof data.name === 'string' && data.name) {
+        setConseillerName(data.name);
+      }
+    }
+    // Prénom partagé entre outils Level Up
+    const nameInput = document.getElementById('conseiller-name');
+    if (!nameInput.value) {
+      const prenom = localStorage.getItem(PRENOM_KEY);
+      if (prenom) setConseillerName(prenom);
+    }
+  } catch(e) { /* stockage indisponible ou corrompu */ }
+}
+
+function setConseillerName(val) {
+  const input = document.getElementById('conseiller-name');
+  input.value = val;
+  document.getElementById('print-name').textContent = val ? val + ' — Ma Semaine Type' : 'Ma Semaine Type';
+}
+
+document.getElementById('conseiller-name').addEventListener('input', function() {
+  try { localStorage.setItem(PRENOM_KEY, this.value); } catch(e) {}
+  saveState();
+});
+
+// ── RAPPEL PLAN SMART ──
+function escapeHTML(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function showPlanReminder() {
+  try {
+    const raw = localStorage.getItem('levelup:plan:result');
+    if (!raw) return;
+    const plan = JSON.parse(raw);
+    if (!plan || !Array.isArray(plan.actions) || plan.actions.length === 0) return;
+    const box = document.getElementById('plan-reminder');
+    box.style.cssText = 'display:block;background:#fdf6dc;border:1px solid #eeddad;border-left:3px solid var(--yellow);border-radius:8px;padding:10px 12px;font-size:13px;color:#5c5646;line-height:1.5;';
+    let html = `<strong style="color:var(--yellow-text)">🎯 Ton plan SMART (du ${escapeHTML(plan.date || '')})</strong><br>À caser dans ta semaine :`;
+    plan.actions.forEach(a => {
+      if (!a) return;
+      html += `<br>• ${escapeHTML(a.titre || '')}`;
+      if (a.creneau) html += `<span style="color:var(--gray-light)"> — ${escapeHTML(a.creneau)}</span>`;
+    });
+    box.innerHTML = html;
+  } catch(e) { /* pas de plan ou JSON invalide */ }
 }
 
 // ── STATS ──
@@ -798,6 +873,7 @@ function clearAll() {
   if (!confirm('Effacer tous les blocs ?')) return;
   blocks = [];
   renderBlocks();
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
 }
 
 // ── EXPORT PNG ──
@@ -823,7 +899,9 @@ async function exportPNG() {
 // ── INIT ──
 buildPalette();
 buildGrid();
-updateStats();
+restoreState();
+renderBlocks();
+showPlanReminder();
 </script>
 </body>
 </html>

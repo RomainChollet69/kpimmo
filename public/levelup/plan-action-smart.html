@@ -168,6 +168,8 @@ input[type="date"] { color-scheme: light; }
 .smart-pill .word { font-size: 10px; color: var(--gray-light); }
 .smart-pill.ok { background: var(--yellow-bg); border-color: var(--yellow); }
 .smart-pill.ok .letter { color: var(--yellow-text); }
+.smart-pill.manual { cursor: pointer; }
+.smart-pill.manual:hover { border-color: var(--yellow); }
 
 /* ── CARDS ── */
 .card {
@@ -506,6 +508,11 @@ input[type="date"] { color-scheme: light; }
     </div>
 
     <div class="field">
+      <label>Ton point de départ <span>(optionnel — aide l'IA à calibrer)</span></label>
+      <textarea id="obj-depart" placeholder="ex : 3 mandats en cours dont 1 exclusif, 2 ventes signées cette année, CA actuel 18 000 €..." style="min-height:70px;"></textarea>
+    </div>
+
+    <div class="field">
       <label>Période visée</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div>
@@ -524,11 +531,11 @@ input[type="date"] { color-scheme: light; }
       <div class="smart-grid" id="smart-grid">
         <div class="smart-pill" id="sp-s"><div class="letter">S</div><div class="word">Spécifique</div></div>
         <div class="smart-pill" id="sp-m"><div class="letter">M</div><div class="word">Mesurable</div></div>
-        <div class="smart-pill" id="sp-a"><div class="letter">A</div><div class="word">Atteignable</div></div>
-        <div class="smart-pill" id="sp-r"><div class="letter">R</div><div class="word">Réaliste</div></div>
+        <div class="smart-pill manual" id="sp-a" onclick="togglePill(this)" title="Clique pour valider toi-même ce critère"><div class="letter">A</div><div class="word">Atteignable</div></div>
+        <div class="smart-pill manual" id="sp-r" onclick="togglePill(this)" title="Clique pour valider toi-même ce critère"><div class="letter">R</div><div class="word">Réaliste</div></div>
         <div class="smart-pill" id="sp-t"><div class="letter">T</div><div class="word">Temporel</div></div>
       </div>
-      <div class="field-hint" id="smart-hint" style="margin-top:10px;">Commence à saisir ton objectif pour voir l'analyse en temps réel.</div>
+      <div class="field-hint" id="smart-hint" style="margin-top:10px;">S, M et T sont détectés automatiquement — A et R relèvent de ton jugement : clique sur les vignettes pour les valider.</div>
     </div>
 
     <div class="btn-row">
@@ -626,6 +633,7 @@ function showStep(n) {
 }
 
 // ── SMART LIVE ANALYSIS ──
+// S, M, T sont détectés automatiquement — A et R sont validés manuellement (vignettes cliquables).
 function checkSmartLive() {
   const text = document.getElementById('obj-brut').value;
   const dateD = document.getElementById('date-debut').value;
@@ -633,32 +641,35 @@ function checkSmartLive() {
 
   const hasNumber = /\d/.test(text);
   const hasAction = text.length > 20;
-  const hasContext = text.length > 50;
   const hasTemporal = (dateD && dateF) || /semaine|mois|trimestre|année|janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre|d'ici|avant le|au \d/i.test(text);
-  const hasRealistic = text.length > 30;
 
   toggle('sp-s', hasAction);
   toggle('sp-m', hasNumber);
-  toggle('sp-a', hasRealistic);
-  toggle('sp-r', hasContext);
   toggle('sp-t', hasTemporal);
 
-  const count = [hasAction, hasNumber, hasRealistic, hasContext, hasTemporal].filter(Boolean).length;
-  const hints = [
-    'Ajoute des détails sur ton secteur ou type de bien.',
-    'Ajoute un chiffre : nombre de mandats, de RDV, de CA…',
-    'Précise une fourchette réaliste par rapport à ton activité actuelle.',
-    'Développe le contexte : zone, type de prospection, point de départ.',
-    'Indique une date de début et de fin (champs ci-dessus).',
-  ];
-  const missing = [];
-  if (!hasAction) missing.push(hints[0]);
-  if (!hasNumber) missing.push(hints[1]);
-  if (!hasTemporal) missing.push(hints[4]);
+  const aOk = document.getElementById('sp-a').classList.contains('ok');
+  const rOk = document.getElementById('sp-r').classList.contains('ok');
 
-  document.getElementById('smart-hint').textContent = count >= 4
-    ? '✅ Bon niveau de précision — prêt à générer !'
-    : missing[0] || 'Continue à préciser ton objectif…';
+  const count = [hasAction, hasNumber, hasTemporal, aOk, rOk].filter(Boolean).length;
+  const missing = [];
+  if (!hasAction) missing.push('Ajoute des détails sur ton secteur ou type de bien.');
+  if (!hasNumber) missing.push('Ajoute un chiffre : nombre de mandats, de RDV, de CA…');
+  if (!hasTemporal) missing.push('Indique une date de début et de fin (champs ci-dessus).');
+
+  let hint;
+  if (count === 5) {
+    hint = '✅ Bon niveau de précision — prêt à générer !';
+  } else if (missing.length === 0) {
+    hint = 'Valide toi-même « Atteignable » et « Réaliste » en cliquant sur les vignettes.';
+  } else {
+    hint = missing[0];
+  }
+  document.getElementById('smart-hint').textContent = hint;
+}
+
+function togglePill(el) {
+  el.classList.toggle('ok');
+  checkSmartLive();
 }
 
 function toggle(id, ok) {
@@ -669,6 +680,7 @@ function toggle(id, ok) {
 async function generatePlan() {
   const objBrut = document.getElementById('obj-brut').value.trim();
   const why = document.getElementById('obj-why').value.trim();
+  const depart = document.getElementById('obj-depart').value.trim();
   const dateD = document.getElementById('date-debut').value;
   const dateF = document.getElementById('date-fin').value;
 
@@ -687,6 +699,7 @@ Un conseiller immobilier a décrit son objectif de cette façon :
 "${objBrut}"
 
 Son WHY (motivation profonde) : "${why || 'Non précisé'}"
+Point de départ actuel du conseiller : "${depart || 'Non précisé'}"
 Période visée : du ${dateD || 'date de début non précisée'} au ${dateF || 'date de fin non précisée'}
 
 Ta mission :
@@ -698,6 +711,8 @@ Ta mission :
 - Avec une fréquence (quotidien, hebdo, mensuel)
 - Avec un créneau horaire recommandé
 - Adaptée au métier de conseiller immobilier indépendant
+
+Tiens compte de son point de départ pour calibrer des volumes réalistes et progressifs.
 
 Types d'actions à couvrir de préférence : prospection téléphonique, prospection terrain, entretien réseau/LC, suivi pipeline.
 
@@ -721,7 +736,7 @@ Réponds UNIQUEMENT en JSON valide, sans markdown, sans explication, exactement 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -859,6 +874,22 @@ function buildFiche() {
 
   document.getElementById('fiche-actions').innerHTML = actionsHtml;
 
+  // Persistance du résultat — lu par semaine-type.html (contrat localStorage commun)
+  try {
+    localStorage.setItem('levelup:plan:result', JSON.stringify({
+      objectifSmart: objSmart,
+      why: objWhy,
+      actions: Array.from(cards).map(card => ({
+        titre: card.querySelector('.ac-titre').value,
+        desc: card.querySelector('.ac-desc').value,
+        volume: card.querySelector('.ac-volume').value,
+        freq: card.querySelector('.ac-freq').value,
+        creneau: card.querySelector('.ac-creneau').value,
+      })),
+      date: new Date().toLocaleDateString('fr-FR'),
+    }));
+  } catch(e) {}
+
   showStep(3);
 }
 
@@ -893,18 +924,88 @@ function resetAll() {
   document.getElementById('prenom').value = '';
   document.getElementById('obj-brut').value = '';
   document.getElementById('obj-why').value = '';
+  document.getElementById('obj-depart').value = '';
   document.getElementById('date-debut').value = '';
   document.getElementById('date-fin').value = '';
   ['sp-s','sp-m','sp-a','sp-r','sp-t'].forEach(id => document.getElementById(id).classList.remove('ok'));
-  document.getElementById('smart-hint').textContent = 'Commence à saisir ton objectif pour voir l\'analyse en temps réel.';
+  document.getElementById('smart-hint').textContent = 'S, M et T sont détectés automatiquement — A et R relèvent de ton jugement : clique sur les vignettes pour les valider.';
+  try { localStorage.removeItem('levelup:plan:inputs'); } catch(e) {}
 }
 
-// Init dates
+// Init dates (valeurs par défaut — la restauration ci-dessous peut les remplacer)
 const today = new Date();
 const inTwoMonths = new Date(today);
 inTwoMonths.setMonth(inTwoMonths.getMonth() + 2);
 document.getElementById('date-debut').value = today.toISOString().split('T')[0];
 document.getElementById('date-fin').value = inTwoMonths.toISOString().split('T')[0];
+
+// ── PERSISTANCE (contrat localStorage commun Level Up) ──
+// Prénom partagé entre les outils
+try {
+  const savedPrenom = localStorage.getItem('levelup:prenom');
+  if (savedPrenom && !document.getElementById('prenom').value) {
+    document.getElementById('prenom').value = savedPrenom;
+  }
+} catch(e) {}
+document.getElementById('prenom').addEventListener('input', function() {
+  try { localStorage.setItem('levelup:prenom', this.value); } catch(e) {}
+});
+
+// Sauvegarde des champs du formulaire
+function savePlanInputs() {
+  try {
+    localStorage.setItem('levelup:plan:inputs', JSON.stringify({
+      objBrut: document.getElementById('obj-brut').value,
+      why: document.getElementById('obj-why').value,
+      depart: document.getElementById('obj-depart').value,
+      dateDebut: document.getElementById('date-debut').value,
+      dateFin: document.getElementById('date-fin').value,
+    }));
+  } catch(e) {}
+}
+['obj-brut', 'obj-why', 'obj-depart', 'date-debut', 'date-fin'].forEach(id => {
+  document.getElementById(id).addEventListener('input', savePlanInputs);
+});
+
+// Restauration (APRÈS l'init des dates par défaut : les dates sauvegardées les remplacent seulement si présentes)
+try {
+  const saved = JSON.parse(localStorage.getItem('levelup:plan:inputs') || 'null');
+  if (saved) {
+    if (saved.objBrut) document.getElementById('obj-brut').value = saved.objBrut;
+    if (saved.why) document.getElementById('obj-why').value = saved.why;
+    if (saved.depart) document.getElementById('obj-depart').value = saved.depart;
+    if (saved.dateDebut) document.getElementById('date-debut').value = saved.dateDebut;
+    if (saved.dateFin) document.getElementById('date-fin').value = saved.dateFin;
+    checkSmartLive();
+  }
+} catch(e) {}
+
+// ── CHAÎNAGE DEPUIS LE BFR ──
+try {
+  const bfr = JSON.parse(localStorage.getItem('levelup:bfr:result') || 'null');
+  if (bfr && bfr.ventesAn) {
+    const bfrFmt = Number(bfr.bfr || 0).toLocaleString('fr-FR');
+    const caFmt = Number(bfr.caAn || 0).toLocaleString('fr-FR');
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background:#fdf9e9;border:1px solid #ecd98a;border-left:4px solid var(--yellow);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--black);margin-bottom:20px;line-height:1.6;';
+    box.innerHTML = `💡 <strong style="color:var(--yellow-text);">D'après ton calcul BFR du ${escHtml(String(bfr.date || ''))}</strong> : ${escHtml(String(bfr.ventesAn))} ventes/an (${escHtml(String(bfr.ventesMois))}/mois) pour te verser ${bfrFmt} €/mois.`;
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-ghost';
+    btn.style.cssText = 'font-size:13px;padding:6px 14px;margin-top:10px;display:block;';
+    btn.textContent = 'Utiliser comme objectif';
+    btn.onclick = function() {
+      document.getElementById('obj-brut').value = `Réaliser ${bfr.ventesAn} ventes sur les 12 prochains mois (soit environ ${bfr.ventesMois} par mois), générer ${caFmt} € de chiffre d'affaires et me verser ${bfrFmt} € net chaque mois.`;
+      checkSmartLive();
+      savePlanInputs();
+    };
+    box.appendChild(btn);
+
+    const objField = document.getElementById('obj-brut').closest('.field');
+    objField.parentNode.insertBefore(box, objField.nextSibling);
+  }
+} catch(e) {}
 </script>
 </body>
 </html>

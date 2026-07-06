@@ -899,12 +899,12 @@
       <div class="field-row">
         <div>
           <div class="field-label">Taux de cotisations sociales</div>
-          <div class="field-hint">Auto-entrepreneur : 22 % sur la rétrocession brute perçue</div>
+          <div class="field-hint">Micro-BNC 2026 : 25,6 % de cotisations sociales sur la rétrocession brute (hors impôt sur le revenu)</div>
         </div>
         <div>
           <select id="taux_cotis">
-            <option value="22" selected>Auto-entrepreneur — 22 %</option>
-            <option value="25">Micro-entreprise BIC — 25 %</option>
+            <option value="25.6" selected>Micro-entrepreneur BNC — 25,6 %</option>
+            <option value="27.8">Micro-BNC + versement libératoire impôt — 27,8 %</option>
             <option value="28">Portage salarial — ~28 %</option>
             <option value="0">Autre / déjà inclus</option>
           </select>
@@ -941,6 +941,31 @@
       </div>
     </div>
 
+    <div class="field-group">
+      <div class="field-group-title"><span class="icon">🔄</span> Mon entonnoir de prospection</div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Taux mandats → ventes</div>
+          <div class="field-hint">Part de tes mandats qui aboutissent à une vente (moyenne constatée : 50-70 %)</div>
+        </div>
+        <div class="input-wrap"><input type="number" id="tx_mandat_vente" value="60" min="1" max="100"><span class="currency">%</span></div>
+      </div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Taux RDV estimation → mandats</div>
+          <div class="field-hint">Part de tes RDV d'estimation qui signent un mandat</div>
+        </div>
+        <div class="input-wrap"><input type="number" id="tx_rdv_mandat" value="50" min="1" max="100"><span class="currency">%</span></div>
+      </div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">Taux contacts → RDV estimation</div>
+          <div class="field-hint">Part de tes contacts vendeurs (appels, terrain) qui acceptent un RDV</div>
+        </div>
+        <div class="input-wrap"><input type="number" id="tx_contact_rdv" value="10" min="1" max="100"><span class="currency">%</span></div>
+      </div>
+    </div>
+
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="goToStep(2)">← Retour</button>
       <button class="btn btn-primary" onclick="calculate()">Calculer mon BFR ⚡</button>
@@ -970,6 +995,19 @@
       <div class="decompo-line" style="margin-top:12px;padding-top:8px;font-size:12px;color:var(--gray-light);border-top:1px dashed var(--gray);">
         <span>Pour mémoire — tes charges mensuelles (perso + pro)</span><span class="dval" id="dec-charges">—</span>
       </div>
+      <div class="decompo-line" id="dec-ir" style="font-size:12px;color:var(--gray-light);border-bottom:none;font-weight:400;"></div>
+    </div>
+
+    <!-- ALERTES SEUILS RÉGLEMENTAIRES -->
+    <div id="seuils-alerts"></div>
+
+    <!-- TRÉSORERIE DE SÉCURITÉ -->
+    <div class="vital-banner" id="treso-banner">
+      <div>
+        <div class="vb-label">🛟 Trésorerie de sécurité recommandée</div>
+        <div class="vb-hint">= 4 mois de charges perso + pro. Entre le compromis et l'acte, 3 à 4 mois s'écoulent sans encaissement — garde cette avance pour prospecter sereinement.</div>
+      </div>
+      <div class="vb-amount" id="treso-amount">— €</div>
     </div>
 
     <!-- GRID CA + MANDATS -->
@@ -1008,6 +1046,27 @@
       <div class="mandats-stat">
         <span class="stat-label" style="font-weight:600;color:var(--white);">Ventes à réaliser par an</span>
         <span class="stat-value big" id="res-mandats-an">—</span>
+      </div>
+    </div>
+
+    <!-- ENTONNOIR D'ACTIVITÉ -->
+    <div class="mandats-box">
+      <h3>🔄 Ton entonnoir d'activité</h3>
+      <div class="mandats-stat">
+        <span class="stat-label" style="font-weight:600;color:var(--white);">Mandats à rentrer / an</span>
+        <span class="stat-value big" id="res-entonnoir-mandats-an">—</span>
+      </div>
+      <div class="mandats-stat">
+        <span class="stat-label">Mandats à rentrer / mois</span>
+        <span class="stat-value" id="res-entonnoir-mandats-mois">—</span>
+      </div>
+      <div class="mandats-stat">
+        <span class="stat-label">RDV estimation / mois</span>
+        <span class="stat-value" id="res-entonnoir-rdv-mois">—</span>
+      </div>
+      <div class="mandats-stat" style="margin-top:12px;padding-top:12px;border-top:2px solid var(--yellow)">
+        <span class="stat-label" style="font-weight:600;color:var(--white);">Contacts vendeurs / semaine</span>
+        <span class="stat-value big" id="res-entonnoir-contacts-sem">—</span>
       </div>
     </div>
 
@@ -1075,8 +1134,10 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Listeners pour le minimum vital live
+  // Listeners pour le minimum vital live + persistance des saisies
   document.addEventListener('DOMContentLoaded', () => {
+    restoreInputs();
+
     const chargeIds = ['loyer','alim','sante','assur','abos','transport','credits','famille',
       'loisirs','energie','pack_efficity','pack_estim','carbu_pro','outils','marketing',
       'repas','formation','comptable'];
@@ -1084,6 +1145,14 @@
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', updateMinVital);
     });
+
+    // Sauvegarde automatique de toutes les saisies
+    document.querySelectorAll('input[type="number"], select').forEach(el => {
+      el.addEventListener('input', saveInputs);
+      el.addEventListener('change', saveInputs);
+    });
+
+    updateProjet();
     updateMinVital();
   });
 
@@ -1259,6 +1328,61 @@
     document.getElementById('res-mandats-mois').textContent = mandatsMois.toFixed(1).replace('.', ',');
     document.getElementById('res-mandats-an').textContent   = Math.ceil(mandatsAn);
 
+    // ── ENTONNOIR D'ACTIVITÉ ──
+    // Rappel : mandatsAn = nombre de VENTES par an (nom historique)
+    const txMV = val('tx_mandat_vente') / 100;
+    const txRM = val('tx_rdv_mandat') / 100;
+    const txCR = val('tx_contact_rdv') / 100;
+    if (txMV > 0) {
+      const mandatsRentresAn = mandatsAn / txMV;
+      document.getElementById('res-entonnoir-mandats-an').textContent   = Math.ceil(mandatsRentresAn);
+      document.getElementById('res-entonnoir-mandats-mois').textContent = (mandatsRentresAn / 12).toFixed(1).replace('.', ',');
+      if (txRM > 0) {
+        const rdvAn = mandatsRentresAn / txRM;
+        document.getElementById('res-entonnoir-rdv-mois').textContent = (rdvAn / 12).toFixed(1).replace('.', ',');
+        document.getElementById('res-entonnoir-contacts-sem').textContent =
+          txCR > 0 ? Math.ceil(rdvAn / txCR / 52) : '—';
+      } else {
+        document.getElementById('res-entonnoir-rdv-mois').textContent = '—';
+        document.getElementById('res-entonnoir-contacts-sem').textContent = '—';
+      }
+    } else {
+      document.getElementById('res-entonnoir-mandats-an').textContent = '—';
+      document.getElementById('res-entonnoir-mandats-mois').textContent = '—';
+      document.getElementById('res-entonnoir-rdv-mois').textContent = '—';
+      document.getElementById('res-entonnoir-contacts-sem').textContent = '—';
+    }
+
+    // ── MENTION IMPÔT SUR LE REVENU ──
+    document.getElementById('dec-ir').textContent = val('taux_cotis') === 27.8
+      ? 'Impôt sur le revenu inclus via le versement libératoire (2,2 % du CA).'
+      : 'Hors impôt sur le revenu — versement libératoire (2,2 % du CA) ou barème après abattement de 34 %.';
+
+    // ── ALERTES SEUILS RÉGLEMENTAIRES ──
+    let alertsHtml = '';
+    if (retroAn > 77700) {
+      alertsHtml += `<div class="vital-banner" style="border-color:#f3d1d1;border-left-color:#dc2626;background:#fdf2f2;">
+        <div>
+          <div class="vb-label" style="color:#dc2626;">🚨 Plafond micro-entreprise dépassé</div>
+          <div class="vb-hint">Ta rétrocession annuelle (${fmt(retroAn)}) dépasse 77 700 €. Le régime micro-BNC ne s'applique plus : anticipe un passage en entreprise individuelle au réel ou en société (les taux de ce simulateur ne seront alors plus valables).</div>
+        </div>
+        <div class="vb-amount" style="color:#dc2626;">${fmt(retroAn)}</div>
+      </div>`;
+    }
+    if (retroAn > 37500) {
+      alertsHtml += `<div class="vital-banner" style="border-color:#d3e1f5;border-left-color:#2563eb;background:#eef4fd;">
+        <div>
+          <div class="vb-label" style="color:#2563eb;">ℹ️ Franchise de TVA dépassée</div>
+          <div class="vb-hint">Au-delà de 37 500 € de rétrocession annuelle (seuil majoré : 41 250 €), tu factures la TVA sur tes commissions. Neutre sur ton revenu (Efficity la récupère) mais des déclarations sont à prévoir.</div>
+        </div>
+        <div class="vb-amount" style="color:#2563eb;">${fmt(retroAn)}</div>
+      </div>`;
+    }
+    document.getElementById('seuils-alerts').innerHTML = alertsHtml;
+
+    // ── TRÉSORERIE DE SÉCURITÉ ──
+    document.getElementById('treso-amount').textContent = fmt(chargesTotal * 4);
+
     // ── PALIERS DISPLAY ──
     let html = '';
     PALIERS.forEach((p, idx) => {
@@ -1310,7 +1434,49 @@
 
     document.getElementById('paliers-display').innerHTML = html;
 
+    // ── SAUVEGARDE DU RÉSULTAT (lu par plan-action-smart.html) ──
+    try {
+      localStorage.setItem('levelup:bfr:result', JSON.stringify({
+        bfr,
+        bfrAn,
+        caAn: Math.round(caAn),
+        caMois: Math.round(caMois),
+        retroAn: Math.round(retroAn),
+        ventesAn: Math.ceil(mandatsAn),
+        ventesMois: +mandatsMois.toFixed(1),
+        date: new Date().toLocaleDateString('fr-FR')
+      }));
+    } catch (e) { /* localStorage indisponible */ }
+
     goToStep(4);
+  }
+
+  // ── PERSISTANCE DES SAISIES ──
+  const INPUTS_KEY = 'levelup:bfr:inputs';
+
+  function saveInputs() {
+    const data = {};
+    document.querySelectorAll('input[type="number"]').forEach(i => { if (i.id) data[i.id] = i.value; });
+    ['taux_cotis', 'projet_type'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data[id] = el.value;
+    });
+    try {
+      localStorage.setItem(INPUTS_KEY, JSON.stringify(data));
+    } catch (e) { /* localStorage indisponible */ }
+  }
+
+  function restoreInputs() {
+    let data = null;
+    try {
+      const raw = localStorage.getItem(INPUTS_KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch (e) { /* localStorage indisponible ou corrompu */ }
+    if (!data) return;
+    Object.keys(data).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = data[id];
+    });
   }
 
   function resetAll() {
@@ -1321,12 +1487,16 @@
         pack_efficity: 105, pack_estim: 84, carbu_pro: 150, outils: 50, marketing: 80,
         repas: 0, formation: 13, comptable: 0,
         revenu_net: 2500, commission_moy: 5500,
+        tx_mandat_vente: 60, tx_rdv_mandat: 50, tx_contact_rdv: 10,
         projet_montant: 0, projet_horizon: 12
       };
       if (defaults[i.id] !== undefined) i.value = defaults[i.id];
     });
-    document.getElementById('taux_cotis').value = '22';
+    document.getElementById('taux_cotis').value = '25.6';
     document.getElementById('projet_type').value = 'none';
+    try {
+      localStorage.removeItem('levelup:bfr:inputs');
+    } catch (e) { /* localStorage indisponible */ }
     updateProjet();
     updateMinVital();
   }
